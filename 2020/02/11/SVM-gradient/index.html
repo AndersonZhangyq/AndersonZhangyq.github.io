@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: 'WMSRGVVUOT',
+      apiKey: '5ceaf5f8cf1949fb54414c992b4099d8',
+      indexName: 'blogIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="SVM 损失函数的梯度 训练样本\(X=[x_1,x_1,\cdots,x_N]^T\)，\(x_i\in\mathbb{R}^{D}\)，样本的类别为\(Y=[y_1,y_2,\cdots,y_n]\)。需要训练的参数\(W=[w_1,w_2,\cdots,w_c]\)，\(w_i\in\mathbb{R}^{D}\)。对每个样本\(x_i\)，SVM 的损失函数Hinge Loss计算方式如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVM 梯度">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="SVM 损失函数的梯度 训练样本\(X=[x_1,x_1,\cdots,x_N]^T\)，\(x_i\in\mathbb{R}^{D}\)，样本的类别为\(Y=[y_1,y_2,\cdots,y_n]\)。需要训练的参数\(W=[w_1,w_2,\cdots,w_c]\)，\(w_i\in\mathbb{R}^{D}\)。对每个样本\(x_i\)，SVM 的损失函数Hinge Loss计算方式如">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-07-21T09:11:16.658Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SVM 梯度">
+<meta name="twitter:description" content="SVM 损失函数的梯度 训练样本\(X=[x_1,x_1,\cdots,x_N]^T\)，\(x_i\in\mathbb{R}^{D}\)，样本的类别为\(Y=[y_1,y_2,\cdots,y_n]\)。需要训练的参数\(W=[w_1,w_2,\cdots,w_c]\)，\(w_i\in\mathbb{R}^{D}\)。对每个样本\(x_i\)，SVM 的损失函数Hinge Loss计算方式如">
+
+
+
+
+
+
+  <link rel="canonical" href="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>SVM 梯度 | Anderson's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Anderson's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SVM 梯度
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-11 12:13:54" itemprop="dateCreated datePublished" datetime="2020-02-11T12:13:54+08:00">2020-02-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-07-21 17:11:16" itemprop="dateModified" datetime="2020-07-21T17:11:16+08:00">2020-07-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/cs231n/" itemprop="url" rel="index"><span itemprop="name">cs231n</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/02/11/SVM-gradient/" class="leancloud_visitors" data-flag-title="SVM 梯度">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="svm-损失函数的梯度">SVM 损失函数的梯度</h1>
+<p>训练样本<span class="math inline">\(X=[x_1,x_1,\cdots,x_N]^T\)</span>，<span class="math inline">\(x_i\in\mathbb{R}^{D}\)</span>，样本的类别为<span class="math inline">\(Y=[y_1,y_2,\cdots,y_n]\)</span>。需要训练的参数<span class="math inline">\(W=[w_1,w_2,\cdots,w_c]\)</span>，<span class="math inline">\(w_i\in\mathbb{R}^{D}\)</span>。对每个样本<span class="math inline">\(x_i\)</span>，SVM 的损失函数<code>Hinge Loss</code>计算方式如下：</p>
+<p><span class="math display">\[
+\begin{align*}
+g_{ic} &amp; = x_iw_c-x_iw_{y_i}+1 \\
+L_{x_i} &amp; =\sum_{c\ne y_i}\max(0,g_{ic}) \\
+\end{align*}
+\]</span></p>
+<p>若使用梯度下降法来更新参数，就需要求出<span class="math inline">\(\mathrm{d}W = \nabla_wL_{x_i}\)</span>，并通过迭代式<span class="math inline">\(w^{t+1}=w^t+\alpha\cdot\mathrm{d}W\)</span>来更新参数。</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \frac{\partial L_{x_i}}{\partial w_{11}} &amp; \frac{\partial L_{x_i}}{\partial w_{12}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{1C}} \\
+   \vdots &amp; \vdots &amp;   &amp;  \vdots  \\
+   \frac{\partial L_{x_i}}{\partial w_{D1}} &amp; \frac{\partial L_{x_i}}{\partial w_{D2}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{DC}} \\
+\end{bmatrix}
+\]</span></p>
+<p>显然，只需要算出其中每一个<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{dc}}\)</span>就可以得到梯度。先从简单地开始看，首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{11}}\)</span>。<span class="math inline">\(w_{11}\)</span>只会出现在<span class="math inline">\(x_iw_1\)</span>中，并且根据内积的运算法则，我们可以很容易得到</p>
+<p><span class="math display">\[
+x_iw_1=\begin{bmatrix}
+   x_{i1} &amp; x_{i2} &amp; \cdots &amp; x_{id}
+\end{bmatrix}
+\begin{bmatrix}
+   w_{11} \\
+   w_{21} \\
+   \vdots \\
+   w_{d1}
+\end{bmatrix}=\sum_k{x_{ik}\cdot w_{k1}}
+\]</span></p>
+<p>所以有</p>
+<p><span class="math display">\[
+\frac{\partial g_{11}}{\partial w_{11}}=x_{i1}
+\]</span></p>
+<p>根据链式法则，有</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{11}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial \max(0,g_{11})}\frac{\partial \max(0,g_{11})}{\partial  g_{11}}\frac{\partial  g_{11}}{\partial w_{11}} \\
+\\
+&amp;=\unicode{x1D7D9} \left((x_iw_1-x_iw_{y_i}+1)&gt;0\right)x_{i1}
+\end{align*}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{1}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{1}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{2c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{2}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{2}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{d1}}(1\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{1}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{1}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{d}}
+\]</span></p>
+<p>依此类推，可得</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{i1} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{i1} \\
+   \vdots &amp; &amp;  \vdots  \\
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{id} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{id} \\
+\end{bmatrix}
+\]</span></p>
+<p>下面讨论<span class="math inline">\(c=y_i\)</span>的情况。首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1y_i}}\)</span>，</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{1y_i}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{1y_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_{y_i}+1)&gt;0\right)\cdot(-x_{i1})
+\end{align*}
+\]</span></p>
+<p>显然</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{y_i}}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{dy_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_\color{green}{y_i}+1)&gt;0\right)\cdot(-x_{i\color{red}{d}})
+\end{align*}
+\]</span></p>
+<p>对于所有样本<span class="math inline">\(X\)</span>的损失函数可表示为</p>
+<p><span class="math display">\[
+L=\frac{1}{N}\sum_{i}^N{L_{x_i}}=\frac{1}{N}\sum_{i}^N{\sum_{c\ne y_i}\max(0,g_{ic})}
+\]</span></p>
+<p>所以</p>
+<p><span class="math display">\[
+\mathrm{d}W=\sum_i^N{\nabla_WL_{x_i}}
+\]</span></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/04/Max-Ent/" rel="next" title="最大熵模型">
+                <i class="fa fa-chevron-left"></i> 最大熵模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/15/Pose-Estimation/" rel="prev" title="Pose-Estimation 论文">
+                Pose-Estimation 论文 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/AndersonZhangyq" title="GitHub &rarr; https://github.com/AndersonZhangyq" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:andersonzhangyq@gmail.com" title="E-Mail &rarr; mailto:andersonzhangyq@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#svm-损失函数的梯度"><span class="nav-number">1.</span> <span class="nav-text">SVM 损失函数的梯度</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson Zhang</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v6.5.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.5.0"></script>
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "mRtaXaF9DEceSb3KW9l5XkkL-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "mRtaXaF9DEceSb3KW9l5XkkL-gzGzoHsz",
+                'X-LC-Key': "mSuyv4P6rmdYhqwJGEJAbPHb",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

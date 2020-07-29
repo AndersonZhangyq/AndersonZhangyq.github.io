@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: 'WMSRGVVUOT',
+      apiKey: '5ceaf5f8cf1949fb54414c992b4099d8',
+      indexName: 'blogIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos  主要使用光流来提高估计的准确度。首先得到\([t-n,t+n]\)帧关节k的热力图，然后计算\([t-n,t+n]\)中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记\(w_{t+1\rightarrow t}\)为第t+1帧到第t帧的光流，那么">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Multi-Frame Pose Estimation">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos  主要使用光流来提高估计的准确度。首先得到\([t-n,t+n]\)帧关节k的热力图，然后计算\([t-n,t+n]\)中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记\(w_{t+1\rightarrow t}\)为第t+1帧到第t帧的光流，那么">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/image-20200715225905146.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/image-20200715232718905.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/image-20200716090204471.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/image-20200716093209065.png">
+<meta property="og:updated_time" content="2020-07-21T09:11:16.573Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Multi-Frame Pose Estimation">
+<meta name="twitter:description" content="ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos  主要使用光流来提高估计的准确度。首先得到\([t-n,t+n]\)帧关节k的热力图，然后计算\([t-n,t+n]\)中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记\(w_{t+1\rightarrow t}\)为第t+1帧到第t帧的光流，那么">
+<meta name="twitter:image" content="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/image-20200715225905146.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Multi-Frame Pose Estimation | Anderson's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Anderson's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/07/15/Multi-Frame-Pose-Estimation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Multi-Frame Pose Estimation
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-07-15 22:53:42" itemprop="dateCreated datePublished" datetime="2020-07-15T22:53:42+08:00">2020-07-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-07-21 17:11:16" itemprop="dateModified" datetime="2020-07-21T17:11:16+08:00">2020-07-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Pose-Estimation/" itemprop="url" rel="index"><span itemprop="name">Pose Estimation</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/07/15/Multi-Frame-Pose-Estimation/" class="leancloud_visitors" data-flag-title="Multi-Frame Pose Estimation">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="iccv-2015-flowing-convnets-for-human-pose-estimation-in-videos">ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos</h2>
+<p><img src="image-20200715225905146.png"></p>
+<p>主要使用光流来提高估计的准确度。首先得到<span class="math inline">\([t-n,t+n]\)</span>帧关节k的热力图，然后计算<span class="math inline">\([t-n,t+n]\)</span>中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记<span class="math inline">\(w_{t+1\rightarrow t}\)</span>为第t+1帧到第t帧的光流，那么<span class="math inline">\(H_{t+1}\)</span>根据光流对齐后的热力图可以表示为 <span class="math display">\[
+\hat{H}_{t+1}(x,y)=H_{t+1}(x-w_x^{t+1\rightarrow t},y-w_y^{t+1\rightarrow t})
+\]</span> 最后经过一个<span class="math inline">\(1*1\)</span>的卷积（也就是通道上的加权平均）得到第t帧关节k的热力图。并且实验从下图的实验结果中可以发现，使用这种pooling的效果更好，而且随着n的增加效果稳步提升。</p>
+<p><img src="image-20200715232718905.png"></p>
+<h2 id="cvpr-2017-thin-slicing-network-a-deep-structured-model-for-pose-estimation-in-videos">CVPR-2017 Thin-Slicing Network: A Deep Structured Model for Pose Estimation in Videos</h2>
+<p>本文把姿势估计分解成两个子问题，分别是Spatial Consistency和Temporal Consistency。对于Spatial Consistency，作者通过以下公式建模： <span class="math display">\[
+S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
+\]</span> 首先我们把关节点按照骨骼连接起来，当作一张图，每个关节点就是一个节点，节点的集合表示为<span class="math inline">\(V\)</span>，每根骨骼就是一条边，边的集合表示为<span class="math inline">\(E_s\)</span>（这里的下标s表示Spatial），<span class="math inline">\(p_i\)</span>表示关节点<span class="math inline">\(i\)</span>，那么关节点估计可以转化为最小化上式。</p>
+<p><span class="math inline">\(\phi_i(p_i|I)\)</span>用来表示给定输入图片<span class="math inline">\(I\)</span>，<span class="math inline">\(p_i\)</span>是第<span class="math inline">\(i\)</span>个关节点位置的概率（ <code>confidence values of part i based on the local appearance</code>），这里的<span class="math inline">\(\phi_i\)</span>用卷积神经网络来估计；<span class="math inline">\(\psi_{i,j}(p_i,p_j)\)</span>表示的是关节点<span class="math inline">\(i\)</span>和关节点<span class="math inline">\(j\)</span>的匹配程度，这里利用<code>spring energy model</code>建模，可表示为 <span class="math display">\[
+\begin{align*}
+\psi_{i,j}(p_i,p_j)&amp;=w_{i,j}\cdot d(p_i-p_j)\\
+&amp;=w_{i,j}\cdot [\Delta x\ \Delta x^2\ \Delta y\ \Delta y^2]^T
+\end{align*}
+\]</span> 其中<span class="math inline">\(w_{i,j}\)</span>是可学习参数。</p>
+<p>对于Temporal Consistency，作者以光流为切入点，公式如下 <span class="math display">\[
+\begin{align*}
+&amp;\sum_{(i,i^*)\in E_t}{\psi_{i,i^*}(p_i,p&#39;_{i^*})}\\
+=&amp;\sum_{(i,i^*)\in E_t}{\psi_{i,i^*}(p_i,(p_{i^*}+f_{i^*,i}(p_{i^*})))}\\
+\end{align*}
+\]</span> <span class="math inline">\(\psi\)</span>和之前的一样，只是这个<span class="math inline">\(i^\star\)</span>复杂了一点。这里的<span class="math inline">\(E_t\)</span>是把相邻帧之间同一个关节点连接起来的边的结合，也就是下图中的橙色线。<span class="math inline">\(f_{i^\star,i}(x)\)</span>表示的是按照<span class="math inline">\(i^\star\)</span>所在帧到<span class="math inline">\(i\)</span>所在帧的光流移动点<span class="math inline">\(x\)</span>，其实就是下图中左侧<code>flow warp</code>。举个例子，先估计出<span class="math inline">\(t-1\)</span>帧的关节点，然后按照<span class="math inline">\(t-1\)</span>帧到<span class="math inline">\(t\)</span>帧的光流，把每个关节点按照光流做<code>propagate</code>，propagate之后的关节点就是<span class="math inline">\(i^\star\)</span>。</p>
+<p>从不同帧使用Temporal Information估计同一帧的关节点，如果大家估计的差不多，那么说明有很好的一致性，关节点的连续性得到了保证。</p>
+<p><img src="image-20200716090204471.png"></p>
+<p>最终的目的就是最大化上述两个式子，就能实现时空一致性。</p>
+<h2 id="cvpr-2018-detect-and-track-efficient-pose-estimation-in-videos">CVPR-2018 Detect-and-Track: Efficient Pose Estimation in Videos</h2>
+<p>网络结构如下图所示。其实这个做法非常非常的简单，就是一个多任务学习，收到<code>I3D</code>的启发，把<code>Mask RCNN</code>改成了3D卷积的形式，原来的<code>RPN</code>（<code>Region Proposal Network</code>）改成了<code>TPN</code>（<code>Tube Proposal Network</code>）。这个Tube很好理解，原来RPN是在图上找一个矩形区域，那如果一个视频的话，连续T帧都在同一个位置划定一个矩形，连接起来不就是个Tube了。并且<code>Mask RCNN</code>本来就有一个head是用来做关键点检测的，嗯，所以他主要就是把2D卷积换成了3D卷积。这里的Spatio-Temporal RoIAlign其实就是对每帧上的RoI做RoIAlign，然后再按顺序拼接起来。</p>
+<p><img src="image-20200716093209065.png"></p>
+<h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
+<p>套个LSTM就完事了，Temporal Information让他自己去学吧。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/15/Pose-Estimation/" rel="next" title="Pose-Estimation 论文">
+                <i class="fa fa-chevron-left"></i> Pose-Estimation 论文
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/20/Ubuntu-20-04-Chinese-IME/" rel="prev" title="Ubuntu 20.04 中文输入法">
+                Ubuntu 20.04 中文输入法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/AndersonZhangyq" title="GitHub &rarr; https://github.com/AndersonZhangyq" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:andersonzhangyq@gmail.com" title="E-Mail &rarr; mailto:andersonzhangyq@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#iccv-2015-flowing-convnets-for-human-pose-estimation-in-videos"><span class="nav-number">1.</span> <span class="nav-text">ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2017-thin-slicing-network-a-deep-structured-model-for-pose-estimation-in-videos"><span class="nav-number">2.</span> <span class="nav-text">CVPR-2017 Thin-Slicing Network: A Deep Structured Model for Pose Estimation in Videos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2018-detect-and-track-efficient-pose-estimation-in-videos"><span class="nav-number">3.</span> <span class="nav-text">CVPR-2018 Detect-and-Track: Efficient Pose Estimation in Videos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2018-lstm-pose-machines"><span class="nav-number">4.</span> <span class="nav-text">CVPR-2018 LSTM Pose Machines</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson Zhang</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v6.5.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.5.0"></script>
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "mRtaXaF9DEceSb3KW9l5XkkL-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "mRtaXaF9DEceSb3KW9l5XkkL-gzGzoHsz",
+                'X-LC-Key': "mSuyv4P6rmdYhqwJGEJAbPHb",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
