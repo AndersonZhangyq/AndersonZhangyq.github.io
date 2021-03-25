@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。 OKS (Object Keypoint Similarity) \[ OKS_p &#x3D; \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}&#x3D;1)}{\sum_i\delt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pose Estimation 指标">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。 OKS (Object Keypoint Similarity) \[ OKS_p &#x3D; \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}&#x3D;1)}{\sum_i\delt">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/image-20210325204226067.png">
+<meta property="article:published_time" content="2021-03-01T08:35:09.000Z">
+<meta property="article:modified_time" content="2021-03-25T13:01:14.495Z">
+<meta property="article:author" content="Anderson Zhang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/image-20210325204226067.png">
+
+
+<link rel="canonical" href="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Pose Estimation 指标 | Anderson's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108155018-3"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108155018-3');
+      }
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Anderson's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#oks-object-keypoint-similarity"><span class="nav-number">1.</span> <span class="nav-text">OKS (Object Keypoint Similarity)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#oks-%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.</span> <span class="nav-text">OKS 矩阵</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pck-percentage-of-correct-keypoints"><span class="nav-number">2.</span> <span class="nav-text">PCK (Percentage of Correct Keypoints)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apaverage-precision-araverage-recall"><span class="nav-number">3.</span> <span class="nav-text">AP（Average Precision）&amp; AR（Average Recall）</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anderson Zhang"
+      src="/images/logo.svg">
+  <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0FuZGVyc29uWmhhbmd5cQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AndersonZhangyq"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFuZGVyc29uemhhbmd5cUBnbWFpbC5jb20=" title="E-Mail → mailto:andersonzhangyq@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pose Estimation 指标
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-01 16:35:09" itemprop="dateCreated datePublished" datetime="2021-03-01T16:35:09+08:00">2021-03-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Pose-Estimation/" itemprop="url" rel="index"><span itemprop="name">Pose Estimation</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。</p>
+<h3 id="oks-object-keypoint-similarity">OKS (Object Keypoint Similarity)</h3>
+<p><span class="math display">\[
+OKS_p = \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}=1)}{\sum_i\delta(v_{pi}=1)}
+\]</span></p>
+<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
+<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
+<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
+<p><span class="math inline">\(S_p\)</span> 表示尺度缩放因子，<span class="math inline">\(S_p=\sqrt{(x_2-x_1)(y_2-y_1)}\)</span></p>
+<p><span class="math inline">\(\sigma_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的归一化因子，对数据集中所有groundtruth计算的标准差而得到的，反映出当前骨骼点标注时候的标准差， <span class="math inline">\(\sigma_i\)</span>越大则越难标注</p>
+<p><span class="math inline">\(v_{pi}\)</span>表示关节点是否可见</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_oks</span>(<span class="params">dts, gts</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(dts) * <span class="built_in">len</span>(gts) == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> np.array([])</span><br><span class="line">    oks_mat = np.zeros((<span class="built_in">len</span>(dts), <span class="built_in">len</span>(gts)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute oks between each detection and ground truth object</span></span><br><span class="line">    <span class="keyword">for</span> j, gt <span class="keyword">in</span> <span class="built_in">enumerate</span>(gts):</span><br><span class="line">        <span class="comment"># create bounds for ignore regions(double the gt bbox)</span></span><br><span class="line">        g = np.array(gt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">        xg = g[<span class="number">0</span>::<span class="number">3</span>]; yg = g[<span class="number">1</span>::<span class="number">3</span>]; vg = g[<span class="number">2</span>::<span class="number">3</span>]</span><br><span class="line">        k1 = np.count_nonzero(vg &gt; <span class="number">0</span>)</span><br><span class="line">        bb = gt[<span class="string">&#x27;bbox&#x27;</span>]</span><br><span class="line">        x0 = bb[<span class="number">0</span>] - bb[<span class="number">2</span>]; x1 = bb[<span class="number">0</span>] + bb[<span class="number">2</span>] * <span class="number">2</span></span><br><span class="line">        y0 = bb[<span class="number">1</span>] - bb[<span class="number">3</span>]; y1 = bb[<span class="number">1</span>] + bb[<span class="number">3</span>] * <span class="number">2</span></span><br><span class="line">        <span class="keyword">for</span> i, dt <span class="keyword">in</span> <span class="built_in">enumerate</span>(dts):</span><br><span class="line">            d = np.array(dt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">            xd = d[<span class="number">0</span>::<span class="number">3</span>]; yd = d[<span class="number">1</span>::<span class="number">3</span>]</span><br><span class="line">            <span class="keyword">if</span> k1&gt;<span class="number">0</span>:</span><br><span class="line">                <span class="comment"># measure the per-keypoint distance if keypoints visible</span></span><br><span class="line">                dx = xd - xg</span><br><span class="line">                dy = yd - yg</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># measure minimum distance to keypoints in (x0,y0) &amp; (x1,y1)</span></span><br><span class="line">                z = np.zeros((<span class="built_in">len</span>(sigmas)))</span><br><span class="line">                dx = np.<span class="built_in">max</span>((z, x0-xd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, xd-x1),axis=<span class="number">0</span>)</span><br><span class="line">                dy = np.<span class="built_in">max</span>((z, y0-yd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, yd-y1),axis=<span class="number">0</span>)</span><br><span class="line">            e = (dx**<span class="number">2</span> + dy**<span class="number">2</span>) / variances / (gt[<span class="string">&#x27;area&#x27;</span>]+np.spacing(<span class="number">1</span>)) / <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> k1 &gt; <span class="number">0</span>:</span><br><span class="line">                e=e[vg &gt; <span class="number">0</span>]</span><br><span class="line">            oks_mat[i, j] = np.<span class="built_in">sum</span>(np.exp(-e)) / e.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> oks_mat</span><br></pre></td></tr></table></figure>
+<h4 id="oks-矩阵">OKS 矩阵</h4>
+<p>对于多人姿态估计，若gt中M个人，预测了N个人，计算两两之间的OKS构成<span class="math inline">\(M\times N\)</span>矩阵，最后选择每个gt的人中最大的OKS值作为结果。</p>
+<h3 id="pck-percentage-of-correct-keypoints">PCK (Percentage of Correct Keypoints)</h3>
+<p><span class="math display">\[
+PCK_p^i=\frac{\sum_p\delta(\frac{d_{pi}}{d_{p}^{def}}\le T_i)}{\sum_p1}
+\]</span></p>
+<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
+<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
+<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
+<p><span class="math inline">\(d_{p}^{def}\)</span> 表示尺度缩放因子，对于FLIC使用的是躯干直径（左肩到左臀或右肩到左臀），对于MPII用的是头部对角线的长度（<strong>PCKh</strong>）</p>
+<p><span class="math inline">\(T_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的阈值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_pck_pckh</span>(<span class="params">dt_kpts,gt_kpts,refer_kpts</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    pck指标计算</span></span><br><span class="line"><span class="string">    :param dt_kpts:算法检测输出的估计结果,shape=[n,h,w]=[行人数，２，关键点个数]</span></span><br><span class="line"><span class="string">    :param gt_kpts: groundtruth人工标记结果,shape=[n,h,w]</span></span><br><span class="line"><span class="string">    :param refer_kpts: 尺度因子，用于预测点与groundtruth的欧式距离的scale。</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pck指标：躯干直径，左肩点－右臀点的欧式距离；</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pckh指标：头部长度，头部rect的对角线欧式距离；</span></span><br><span class="line"><span class="string">    :return: 相关指标</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    dt=np.array(dt_kpts)</span><br><span class="line">    gt=np.array(gt_kpts)</span><br><span class="line">    <span class="keyword">assert</span>(<span class="built_in">len</span>(refer_kpts)==<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">assert</span>(dt.shape[<span class="number">0</span>]==gt.shape[<span class="number">0</span>])</span><br><span class="line">    ranges=np.arange(<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.01</span>)</span><br><span class="line">    kpts_num=gt.shape[<span class="number">2</span>]</span><br><span class="line">    ped_num=gt.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">#compute dist</span></span><br><span class="line">    scale=np.sqrt(np.<span class="built_in">sum</span>(np.square(gt[:,:,refer_kpts[<span class="number">0</span>]]-gt[:,:,refer_kpts[<span class="number">1</span>]]),<span class="number">1</span>))</span><br><span class="line">    dist=np.sqrt(np.<span class="built_in">sum</span>(np.square(dt-gt),<span class="number">1</span>))/np.tile(scale,(gt.shape[<span class="number">2</span>],<span class="number">1</span>)).T</span><br><span class="line">    <span class="comment">#compute pck</span></span><br><span class="line">    pck = np.zeros([ranges.shape[<span class="number">0</span>], gt.shape[<span class="number">2</span>]+<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">for</span> idh,trh <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">list</span>(ranges)):</span><br><span class="line">        <span class="keyword">for</span> kpt_idx <span class="keyword">in</span> <span class="built_in">range</span>(kpts_num):</span><br><span class="line">            pck[idh,kpt_idx] = <span class="number">100</span>*np.mean(dist[:,kpt_idx] &lt;= trh)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># compute average pck</span></span><br><span class="line">        pck[idh,-<span class="number">1</span>] = <span class="number">100</span>*np.mean(dist &lt;= trh)</span><br><span class="line">    <span class="keyword">return</span> pck</span><br></pre></td></tr></table></figure>
+<p>PCK现在用的不多，主要用的是OKS</p>
+<h3 id="apaverage-precision-araverage-recall">AP（Average Precision）&amp; AR（Average Recall）</h3>
+<p>AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。 <span class="math display">\[
+P=\frac{TP}{TP+FP}
+\]</span> <span class="math display">\[
+R=\frac{TP}{TP+FN}
+\]</span></p>
+<p>关于COCO上各个<span class="exturl" data-url="aHR0cHM6Ly9jb2NvZGF0YXNldC5vcmcvI2tleXBvaW50cy1ldmFs">指标<i class="fa fa-external-link-alt"></i></span>的具体定义可以参考下图</p>
+<p><img data-src="image-20210325204226067.png" /></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pYRl8xOTkxL2FydGljbGUvZGV0YWlscy8xMDQyNzkzODc=">人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客<i class="fa fa-external-link-alt"></i></span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/07/30/Fully-Supervised-Action-Localization-and-Temporal-Segment-Proposal/" rel="prev" title="Fully-Supervised Action Localization and Temporal Segment Proposal">
+                  <i class="fa fa-chevron-left"></i> Fully-Supervised Action Localization and Temporal Segment Proposal
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/19/C-Interview/" rel="next" title="C++ Interview">
+                  C++ Interview <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2014 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/motion.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/next-boot.min.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/local-search.min.js"></script>
+
+
+
+
+<script data-pjax>
+if (document.querySelectorAll('.mermaid').length) {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/mermaid@8.9.1/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+
+
+    <div class="pjax">
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+    </div>
+</body>
+</html>

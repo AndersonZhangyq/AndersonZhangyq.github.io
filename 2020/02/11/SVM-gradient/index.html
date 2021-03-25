@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="SVM 损失函数的梯度 训练样本\(X&#x3D;[x_1,x_1,\cdots,x_N]^T\)，\(x_i\in\mathbb{R}^{D}\)，样本的类别为\(Y&#x3D;[y_1,y_2,\cdots,y_n]\)。需要训练的参数\(W&#x3D;[w_1,w_2,\cdots,w_c]\)，\(w_i\in\mathbb{R}^{D}\)。对每个样本\(x_i\)，SVM 的损失函数Hinge Loss计算方式如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVM 梯度">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="SVM 损失函数的梯度 训练样本\(X&#x3D;[x_1,x_1,\cdots,x_N]^T\)，\(x_i\in\mathbb{R}^{D}\)，样本的类别为\(Y&#x3D;[y_1,y_2,\cdots,y_n]\)。需要训练的参数\(W&#x3D;[w_1,w_2,\cdots,w_c]\)，\(w_i\in\mathbb{R}^{D}\)。对每个样本\(x_i\)，SVM 的损失函数Hinge Loss计算方式如">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-11T04:13:54.000Z">
+<meta property="article:modified_time" content="2020-07-21T09:11:16.658Z">
+<meta property="article:author" content="Anderson Zhang">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>SVM 梯度 | Anderson's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108155018-3"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108155018-3');
+      }
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Anderson's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#svm-%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%A2%AF%E5%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">SVM 损失函数的梯度</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anderson Zhang"
+      src="/images/logo.svg">
+  <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0FuZGVyc29uWmhhbmd5cQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AndersonZhangyq"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFuZGVyc29uemhhbmd5cUBnbWFpbC5jb20=" title="E-Mail → mailto:andersonzhangyq@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SVM 梯度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-11 12:13:54" itemprop="dateCreated datePublished" datetime="2020-02-11T12:13:54+08:00">2020-02-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/cs231n/" itemprop="url" rel="index"><span itemprop="name">cs231n</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="svm-损失函数的梯度">SVM 损失函数的梯度</h1>
+<p>训练样本<span class="math inline">\(X=[x_1,x_1,\cdots,x_N]^T\)</span>，<span class="math inline">\(x_i\in\mathbb{R}^{D}\)</span>，样本的类别为<span class="math inline">\(Y=[y_1,y_2,\cdots,y_n]\)</span>。需要训练的参数<span class="math inline">\(W=[w_1,w_2,\cdots,w_c]\)</span>，<span class="math inline">\(w_i\in\mathbb{R}^{D}\)</span>。对每个样本<span class="math inline">\(x_i\)</span>，SVM 的损失函数<code>Hinge Loss</code>计算方式如下：</p>
+<p><span class="math display">\[
+\begin{align*}
+g_{ic} &amp; = x_iw_c-x_iw_{y_i}+1 \\
+L_{x_i} &amp; =\sum_{c\ne y_i}\max(0,g_{ic}) \\
+\end{align*}
+\]</span></p>
+<p>若使用梯度下降法来更新参数，就需要求出<span class="math inline">\(\mathrm{d}W = \nabla_wL_{x_i}\)</span>，并通过迭代式<span class="math inline">\(w^{t+1}=w^t+\alpha\cdot\mathrm{d}W\)</span>来更新参数。</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \frac{\partial L_{x_i}}{\partial w_{11}} &amp; \frac{\partial L_{x_i}}{\partial w_{12}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{1C}} \\
+   \vdots &amp; \vdots &amp;   &amp;  \vdots  \\
+   \frac{\partial L_{x_i}}{\partial w_{D1}} &amp; \frac{\partial L_{x_i}}{\partial w_{D2}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{DC}} \\
+\end{bmatrix}
+\]</span></p>
+<p>显然，只需要算出其中每一个<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{dc}}\)</span>就可以得到梯度。先从简单地开始看，首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{11}}\)</span>。<span class="math inline">\(w_{11}\)</span>只会出现在<span class="math inline">\(x_iw_1\)</span>中，并且根据内积的运算法则，我们可以很容易得到</p>
+<p><span class="math display">\[
+x_iw_1=\begin{bmatrix}
+   x_{i1} &amp; x_{i2} &amp; \cdots &amp; x_{id}
+\end{bmatrix}
+\begin{bmatrix}
+   w_{11} \\
+   w_{21} \\
+   \vdots \\
+   w_{d1}
+\end{bmatrix}=\sum_k{x_{ik}\cdot w_{k1}}
+\]</span></p>
+<p>所以有</p>
+<p><span class="math display">\[
+\frac{\partial g_{11}}{\partial w_{11}}=x_{i1}
+\]</span></p>
+<p>根据链式法则，有</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{11}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial \max(0,g_{11})}\frac{\partial \max(0,g_{11})}{\partial  g_{11}}\frac{\partial  g_{11}}{\partial w_{11}} \\
+\\
+&amp;=\unicode{x1D7D9} \left((x_iw_1-x_iw_{y_i}+1)&gt;0\right)x_{i1}
+\end{align*}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{1}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{1}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{2c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{2}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{2}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{d1}}(1\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{1}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{1}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{d}}
+\]</span></p>
+<p>依此类推，可得</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{i1} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{i1} \\
+   \vdots &amp; &amp;  \vdots  \\
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{id} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{id} \\
+\end{bmatrix}
+\]</span></p>
+<p>下面讨论<span class="math inline">\(c=y_i\)</span>的情况。首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1y_i}}\)</span>，</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{1y_i}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{1y_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_{y_i}+1)&gt;0\right)\cdot(-x_{i1})
+\end{align*}
+\]</span></p>
+<p>显然</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{y_i}}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{dy_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_\color{green}{y_i}+1)&gt;0\right)\cdot(-x_{i\color{red}{d}})
+\end{align*}
+\]</span></p>
+<p>对于所有样本<span class="math inline">\(X\)</span>的损失函数可表示为</p>
+<p><span class="math display">\[
+L=\frac{1}{N}\sum_{i}^N{L_{x_i}}=\frac{1}{N}\sum_{i}^N{\sum_{c\ne y_i}\max(0,g_{ic})}
+\]</span></p>
+<p>所以</p>
+<p><span class="math display">\[
+\mathrm{d}W=\sum_i^N{\nabla_WL_{x_i}}
+\]</span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/04/Max-Ent/" rel="prev" title="最大熵模型">
+                  <i class="fa fa-chevron-left"></i> 最大熵模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/15/Pose-Estimation/" rel="next" title="Pose-Estimation 论文">
+                  Pose-Estimation 论文 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2014 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/motion.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/next-boot.min.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/local-search.min.js"></script>
+
+
+
+
+<script data-pjax>
+if (document.querySelectorAll('.mermaid').length) {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/mermaid@8.9.1/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+
+
+    <div class="pjax">
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+    </div>
+</body>
+</html>

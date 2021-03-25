@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos WASP WASP的结构如下图所示（实际上该作者还写过一篇论文Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation，单独写了这个WA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pose-Estimation 论文">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos WASP WASP的结构如下图所示（实际上该作者还写过一篇论文Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation，单独写了这个WA">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/WASP.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/ASPP.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/Res2Net.jpg">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/Unipose-Overview.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/Unipose-Decoder.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/Unipose-LSTM.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/LSTM-Pose-Overview.png">
+<meta property="article:published_time" content="2020-07-15T01:57:29.000Z">
+<meta property="article:modified_time" content="2020-07-21T09:11:16.605Z">
+<meta property="article:author" content="Anderson Zhang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/WASP.png">
+
+
+<link rel="canonical" href="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Pose-Estimation 论文 | Anderson's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108155018-3"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108155018-3');
+      }
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Anderson's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2020-unipose-unified-human-pose-estimation-in-single-images-and-videos"><span class="nav-number">1.</span> <span class="nav-text">CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#wasp"><span class="nav-number">1.1.</span> <span class="nav-text">WASP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unipose-lstm"><span class="nav-number">1.2.</span> <span class="nav-text">UniPose-LSTM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2018-lstm-pose-machines"><span class="nav-number">2.</span> <span class="nav-text">CVPR-2018 LSTM Pose Machines</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anderson Zhang"
+      src="/images/logo.svg">
+  <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0FuZGVyc29uWmhhbmd5cQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AndersonZhangyq"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFuZGVyc29uemhhbmd5cUBnbWFpbC5jb20=" title="E-Mail → mailto:andersonzhangyq@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pose-Estimation 论文
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-15 09:57:29" itemprop="dateCreated datePublished" datetime="2020-07-15T09:57:29+08:00">2020-07-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Pose-Estimation/" itemprop="url" rel="index"><span itemprop="name">Pose Estimation</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="cvpr-2020-unipose-unified-human-pose-estimation-in-single-images-and-videos">CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos</h2>
+<h3 id="wasp">WASP</h3>
+<p>WASP的结构如下图所示（实际上该作者还写过一篇论文<code>Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation</code>，单独写了这个WASP结构，用在语义分割上，这又写了一篇用在姿态识别，水论文么）</p>
+<p><img data-src="WASP.png" /></p>
+<p>作者说是借鉴ASPP、Cascade和Res2Net。</p>
+<p>简单来说，ASPP就是，对于同一个input，用不同dilation的卷积去运算，这样做的好处是在不改变计算量的前提下增大感受野，能够更好的捕捉不同尺度目标的信息。很显然，WASP里面那一行蓝色的就是借用了ASPP里的这一设计思路。</p>
+<p><img data-src="ASPP.png" /></p>
+<p>Res2Net，多尺度特征融合的一个新方法，而且是从一个更细的粒度上去进行多尺度特征融合。常见的方法例如FPN都是从层这个粒度上去融合多尺度特征的，但是Res2Net是从卷积运算的层面上去进行多尺度特征偶然那个和。需要注意的是，这里是把特征按通道来分成<span class="math inline">\(s\)</span>等份（下图中<span class="math inline">\(s=4\)</span>），然后每一组按照下述方法进行运算，例如<span class="math inline">\(X_2\)</span>仅过<span class="math inline">\(3\times3\)</span>卷积之后得到<span class="math inline">\(K_2\)</span>，<span class="math inline">\(K_2\)</span>和<span class="math inline">\(X_3\)</span>加起来继续<span class="math inline">\(3\times3\)</span>卷积，以此类推。可以看到对于不同组的特征，他们仅过卷积的次数是不一样的，那么感受野也就不一样，所以是不同尺度的特征融合。</p>
+<p><img data-src="Res2Net.jpg" /></p>
+<p>个人理解Cascade和Res2Net指的都是WASP中每个卷积之间的横向箭头。</p>
+<p><img data-src="Unipose-Overview.png" /></p>
+<p>UniPose的整体架构如上图所示。输入一张图片，经过ResNet-101提取特征，然后再进过一个WASP模块提取不同尺度的特征，再进过Decoder将特征转化为热图。</p>
+<p><img data-src="Unipose-Decoder.png" /></p>
+<p>其中的Decoder模块，结构也很简单，就是多个卷积层和Dropout的堆叠，最后用双线性插值上采样到输入大小。这里需要注意Decoder的输入，不仅仅是WASP的输出，还有来自ResNet-101的底层特征，特征融合的过程也比较常规。</p>
+<h3 id="unipose-lstm">UniPose-LSTM</h3>
+<p><img data-src="Unipose-LSTM.png" /></p>
+<p>为了利用视频中的时序信息，作者有提出了UniPose-LSTM。其实也没什么特别的，就是用LSTM连起来。前一帧的heatmap和当前帧的heatmap作为LSTM的输入，经过几次卷积后得到最终的heatmap。但是作者这里没有明确前一帧和当前帧的heatmap是怎么结合在一起的，考虑到作者说参考的是<code>LSTM Pose Machine</code>，而<code>LSTM Pose Machine</code>里就是直接将两帧的特征concat，大胆猜测这里也是将前一帧和当前帧的heatmap做concat。</p>
+<h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
+<p>使用LSTM提取视频中的时序信息，改善视频中关节点预测的连续性，算是用到RNN较早的一篇论文了。模型结构如下图所示，对于第一帧图像，用较浅的ConvNet1得到一个热力图当作上一帧的输出，然后和当前帧通过ConvNet2得到的热力图加起来，再加上一个额外的Central Gaussian Map（CPM里用这个来提高准确率），合在一起作为LSTM的输入，然后LSTM的输出经过ConvNet3解码得到热力图。</p>
+<p><img data-src="LSTM-Pose-Overview.png" /></p>
+<p>ConvNet1、ConvNet2、ConvNet3和CPM中各个模型相同，LSTM用的是Conv-LSTM。主要的不同点在于把矩阵乘法换成了卷积。下面的公式里，<span class="math inline">\(*\)</span>本来是矩阵乘法，在Conv-LSTM中是卷积（一般是<span class="math inline">\(3\times3\)</span>卷积），目的是关注局部信息，全局信息可以用LSTM提取。 <span class="math display">\[
+\begin{align*}
+g_t &amp;= \tanh{(W_{xg}*X_t + W_{hg}*h_{t-1} + b_g)} \\
+i_t &amp;= \sigma{(W_{xi}*X_t + W_{hi}*h_{t-1} + b_i)} \\
+f_t &amp;= \sigma{(W_{xf}*X_t + W_{hf}*h_{t-1} + b_f)} \\
+o_t &amp;= \sigma{(W_{xo}*X_t + W_{ho}*h_{t-1} + b_o)} \\
+C_t &amp;= f_t \odot C_{t-1} + i_t \odot g_t \\
+h_t &amp;= o_t \odot \tanh{(C_t)}
+\end{align*}
+\]</span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/11/SVM-gradient/" rel="prev" title="SVM 梯度">
+                  <i class="fa fa-chevron-left"></i> SVM 梯度
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/15/Multi-Frame-Pose-Estimation/" rel="next" title="Multi-Frame Pose Estimation">
+                  Multi-Frame Pose Estimation <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2014 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/motion.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/next-boot.min.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/local-search.min.js"></script>
+
+
+
+
+<script data-pjax>
+if (document.querySelectorAll('.mermaid').length) {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/mermaid@8.9.1/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+
+
+    <div class="pjax">
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+    </div>
+</body>
+</html>

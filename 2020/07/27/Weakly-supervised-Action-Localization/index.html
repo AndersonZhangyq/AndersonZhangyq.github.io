@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="Action Localization 任务是对Action Recognition任务的提高版，不仅仅需要识别出视频中的是什么动作，还需要知道这个动作起始帧和终止帧的具体位置。如果是Action Recognition是图片分类的话，那么Action Localization就是目标检测，不仅仅要知道bounding box里面的是什么，还要知道这个bounding box应该画在哪里。 这里">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Weakly-supervised Action Localization">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="Action Localization 任务是对Action Recognition任务的提高版，不仅仅需要识别出视频中的是什么动作，还需要知道这个动作起始帧和终止帧的具体位置。如果是Action Recognition是图片分类的话，那么Action Localization就是目标检测，不仅仅要知道bounding box里面的是什么，还要知道这个bounding box应该画在哪里。 这里">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200727175656099.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200728161945465.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200728162426054.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200728233533139.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200729092337446.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200730101427059.png">
+<meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200730121432490.png">
+<meta property="article:published_time" content="2020-07-27T09:26:05.000Z">
+<meta property="article:modified_time" content="2021-03-18T07:32:17.776Z">
+<meta property="article:author" content="Anderson Zhang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/image-20200727175656099.png">
+
+
+<link rel="canonical" href="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Weakly-supervised Action Localization | Anderson's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108155018-3"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108155018-3');
+      }
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Anderson's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#aaai-2020-background-suppression-network-for-weakly-supervised-temporal-action-localization"><span class="nav-number">1.</span> <span class="nav-text">AAAI-2020 Background Suppression Network for Weakly-supervised Temporal Action Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#weakly-supervised"><span class="nav-number">1.1.</span> <span class="nav-text">Weakly-supervised</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method"><span class="nav-number">1.2.</span> <span class="nav-text">Method</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2019-completeness-modeling-and-context-separation-for-weakly-supervised-temporal-action-localization"><span class="nav-number">2.</span> <span class="nav-text">CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#method-1"><span class="nav-number">2.1.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#localization"><span class="nav-number">2.2.</span> <span class="nav-text">Localization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2018-weakly-supervised-action-localization-by-sparse-temporal-pooling-network"><span class="nav-number">3.</span> <span class="nav-text">CVPR-2018 Weakly Supervised Action Localization by Sparse Temporal Pooling Network</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#localization-1"><span class="nav-number">3.1.</span> <span class="nav-text">Localization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iccv-2019-weakly-supervised-temporal-action-localization-through-contrast-based-evaluation-networks"><span class="nav-number">4.</span> <span class="nav-text">ICCV-2019 Weakly Supervised Temporal Action Localization through Contrast based Evaluation Networks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cvpr-2017-untrimmednets-for-weakly-supervised-action-recognition-and-detection"><span class="nav-number">5.</span> <span class="nav-text">CVPR-2017 UntrimmedNets for Weakly Supervised Action Recognition and Detection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eccv-2018-weakly-supervised-temporal-action-localization-in-untrimmed-videos"><span class="nav-number">6.</span> <span class="nav-text">ECCV-2018 Weakly-supervised Temporal Action Localization in Untrimmed Videos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eccv-2018-w-talc-weakly-supervised-temporal-activity-localization-and-classification"><span class="nav-number">7.</span> <span class="nav-text">ECCV-2018 W-TALC: Weakly Supervised Temporal Activity Localization and Classification</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anderson Zhang"
+      src="/images/logo.svg">
+  <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0FuZGVyc29uWmhhbmd5cQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AndersonZhangyq"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFuZGVyc29uemhhbmd5cUBnbWFpbC5jb20=" title="E-Mail → mailto:andersonzhangyq@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/07/27/Weakly-supervised-Action-Localization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Weakly-supervised Action Localization
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-27 17:26:05" itemprop="dateCreated datePublished" datetime="2020-07-27T17:26:05+08:00">2020-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Weakly-supervised-Action-Localization/" itemprop="url" rel="index"><span itemprop="name">Weakly-supervised Action Localization</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Action Localization 任务是对Action Recognition任务的提高版，不仅仅需要识别出视频中的是什么动作，还需要知道这个动作起始帧和终止帧的具体位置。如果是Action Recognition是图片分类的话，那么Action Localization就是目标检测，不仅仅要知道bounding box里面的是什么，还要知道这个bounding box应该画在哪里。</p>
+<p>这里的弱监督指的是只标注了视频中包含什么行为（一个视频中可能包含<strong>多个</strong>行为），但是没有标注这个行为的起始帧和终止帧。也就是说，模型需要根据video-level的标注，回归得到每个行为具体发生的起止时间，相对来说这个任务更加困难。</p>
+<h2 id="aaai-2020-background-suppression-network-for-weakly-supervised-temporal-action-localization">AAAI-2020 Background Suppression Network for Weakly-supervised Temporal Action Localization</h2>
+<h3 id="weakly-supervised">Weakly-supervised</h3>
+<p>有学者将<code>Weakly-supervised Action Localization</code>问题化归为<code>Multiple Instance Learning</code>。<code>MIL</code>，简单来说，就是一个集合中有多个实例，如果<strong>每个</strong>实例都是<strong>负样本</strong>，那么这个集合就是<strong>负样本</strong>；如果这个集合中<strong>至少有一个正样本</strong>，那么这个集合就是<strong>正样本</strong>，我们的任务是去预测每个集合的类别。因为视频是由一帧帧图像组成的，那么action localization就可以理解为是我找到一个视频片段，如果这个片段中至少有一帧包含我所关注的行为，那么我就认为这个片段是一个正样本（就所关注的行为而言），否则就是负样本，至于这个片段是否tight，那这个就需要其他方法来进一步优化了。</p>
+<p>但本文的作者认为，视频中有大量帧是不包含任何感兴趣的动作的，如果不单独加入一个background的类，那这些没有任何感兴趣的动作的帧会被迫分类为某一个动作，这是不合适的，所以作者第一步就是加入了background这个类别。</p>
+<p>这时候目标检测里所存在的类别不均衡的问题就出来，如果加入background，那么必然大多数帧都应该是background，这时候background和包含感兴趣的动作的帧的数量就会有很大的差异，导致类别不均衡。<strong><em>（目标检测中的Focal Loss说不定可以一试？）</em></strong></p>
+<p>针对这个问题，作者提出了使用Filter Module来找出background并过滤的方法来解决。</p>
+<h3 id="method">Method</h3>
+<p><img data-src="image-20200727175656099.png" /></p>
+<p>上图就是作者提出的BaSNet（<strong>Ba</strong>ckground <strong>S</strong>uppression <strong>Net</strong>work），左边的特征提取用的是I3D双流网络，特征提取部分不参与网络的训练。给定一个长度为<span class="math inline">\(T\)</span>帧的视频片段，分别提取RGB和光流特征<span class="math inline">\(R^{F\times T}\)</span>，拼接起来之后得到整个片段的特征<span class="math inline">\(R^{2F\times T}\)</span>。</p>
+<p>网络采用双分支的结构，第一个base branch和其他网络类似，通过一个<span class="math inline">\(1\times 1\)</span>卷积得到<code>Class Activation Sequence(CAS)</code>。若数据集中一共有<span class="math inline">\(C\)</span>个动作类别，那么得到的CAS就是<span class="math inline">\(R^{(C+1)\times T}\)</span>，通道<span class="math inline">\(i\)</span>都表示片段中每一帧包含动作<span class="math inline">\(i\)</span>的得分，然后计算每个通道top-k的均值得到<span class="math inline">\(R^{(C+1)}\)</span>，设就是<code>video-level class score</code>了；对于第二个Suppression branch，就是多了一个加权的过程，对片段的特征做两个<span class="math inline">\(1\times 1\)</span>卷积，得到每帧不是background的概率，将这个概率和片段特征相乘之后再获得<code>CAS</code>，方法和base branch相同，并且卷积的参数是共享<strong><em>（这也可以？？）</em></strong>。</p>
+<p>这里有一个小细节，在base branch，所有帧的background这个类都设置为1，而在suppression branch这都设置为0，作者说这是为了让suppression branch正确区分是否是background。</p>
+<p>模型的损失是Binary Cross Entropy，就是每次判断是否是类别<span class="math inline">\(i\)</span>，而不是去判断他是C类中的哪一个，这样可以降低其他类别的影响，适合于<code>Multi-label</code>的任务（<code>Multi-class</code>是指数据集中的样本可被分为2以上的类别，<code>Multi-label</code>是指数据集中每个样本可以属于多个不同的类别）。</p>
+<p>最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一致。</p>
+<h2 id="cvpr-2019-completeness-modeling-and-context-separation-for-weakly-supervised-temporal-action-localization">CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization</h2>
+<p><img data-src="image-20200728161945465.png" /></p>
+<p>主要针对两个问题，一是动作的完整性，比如上图上方射门的例子，包含运动员射门和球飞行两个自动做，作者通过设计多个不同的分支网络，让他们分别关注动作的不同部分，最后求均值来获取更好的CAS。二是动作的上下文和一般的background是不一样的，例如上图下方，台球桌对识别打台球的动作是有帮助的，而且通常出现在动作发生的前后，其分布是有一定规律的，但是background的分布是随机的，同时这些动作上下文也会干扰动作区间的检测，作者通过构造难例来解决。</p>
+<h3 id="method-1">Method</h3>
+<p><img data-src="image-20200728162426054.png" /></p>
+<p>上图是作者提出的模型结构，首先是提取视频特征<span class="math inline">\(R^{T\times D}\)</span>，这里的<span class="math inline">\(T\)</span>作者说是片段数（the number of snippets）。因为预训练的特征提取网络所提取的特征可能不完全适应action localization，所以添加一个Embedding层，得到特征<span class="math inline">\(R^{T\times F}\)</span>。这个特征分别被被送到<span class="math inline">\(K\)</span>分类分支中去，其实就是一个<span class="math inline">\(1\times 1\)</span>卷积，然后再做<code>Softmax</code>得到CAS。为了防止这<span class="math inline">\(K\)</span>各分支学习到相同（或极其相似）的信息，作者加入了一个diversity loss，其中<span class="math inline">\(\overline{A^i_{\star,c}}\)</span>表示<code>Softmax</code>之后第<span class="math inline">\(i\)</span>个branch的第<span class="math inline">\(c\)</span>个类别的CAS <span class="math display">\[
+\mathcal{L}_{div}=\frac{1}{K(K-1)(C+1)/2}\sum_{c=1}^{C+1}{\sum_{i=1}^{K-1}{\sum_{j=i+1}^{K}}{\frac{\overline{A^i_{\star,c}}\cdot\overline{A^j_{\star,c}}}{\Vert\overline{A^i_{\star,c}}\Vert\ \Vert\overline{A^j_{\star,c}}\Vert}}}
+\]</span> 实际上就是让各个分支之间CAS的相似度尽可能小，也就是说不同的branch要在不同的时刻得到较高的激活值，这就能解决动作完整性的，问题，相当于每个branch关注动作的不同部分，虽然单个来看是不够完整的，但是拼在一起就是一个好的结果。</p>
+<p>作者通过实验观察到，往往会存在有一个branch值比较大，而其他branch的值接近于0，这样就会出现一个branch处于主导地位，这不是作者想要的；另一方面这<span class="math inline">\(K\)</span>个branch就像是相互竞争，类似于GAN，所以要尽可能平很各个branch。为此，作者引入了一个另一个损失，降低每个branch中每个类的标准差<strong><em>（没明白为什么要最小化标准差）</em></strong>，其中<span class="math inline">\(A^{avg}=\sum_{k=1}^K {A^k}\)</span> <span class="math display">\[
+\mathcal{L}_{norm}=\frac{1}{K(C+1)}\sum_{c=1}^{C+1}{\sum_{i=1}^{K}}{|\Vert{A^i_{\star,c}}\Vert - \Vert{A^{avg}_{\star,c}}\Vert|}
+\]</span> 最后作者又加了一个简单的Attention来学习片段的重要性，再利用它加权得到视频中含有各个动作的概率： <span class="math display">\[
+\overline{p}=softmax{\sum_{t=1}^T{att_tA^{avg}_{t,\star}}}
+\]</span> 上述这些模块就解决了动作完整性的问题，整体的损失函数为： <span class="math display">\[
+\mathcal{L}=\alpha\mathcal{L}_{div}+\beta\mathcal{L}_{norm}+\mathcal{L}_{mil}
+\]</span></p>
+<h3 id="localization">Localization</h3>
+<p>有点复杂。输入一个测试视频，得到它包含每个动作的概率，不考虑background，去掉所有包含这个动作的概率小于于0.1的CAS；在剩余的CAS中，利用<span class="math inline">\(\overline{A^{avg}_{\star,c}}\)</span>作为阈值选出大于阈值的片段，然后这些片段就作为一个proposal。接下来使用一些公式来个每个片段打个分，实际上就是他同时考虑这个片段的CAS均值和这个片段附近的CAS均值<strong><em>（可这个分有什么用呢？答：作为区间的置信度，用于NMS）</em></strong></p>
+<p><img data-src="image-20200728233533139.png" /></p>
+<h2 id="cvpr-2018-weakly-supervised-action-localization-by-sparse-temporal-pooling-network">CVPR-2018 Weakly Supervised Action Localization by Sparse Temporal Pooling Network</h2>
+<p>作者认为行为可以通过识别视频中的一些关键片段来识别，所以作者提出了一个能够自动学习片段重要性的网络，并自动选择一个具有代表性的自己来识别视频中的行为。</p>
+<p><img data-src="image-20200729092337446.png" /></p>
+<p>每个视频被分为<span class="math inline">\(T\)</span>个片段，每个以第<span class="math inline">\(t\)</span>帧为中心的视频片段都被表示成特征<span class="math inline">\(x_t\in R^m\)</span>，每个特征通过一个Attention Module得到一个该片段的权重值<span class="math inline">\(\lambda_t\)</span>，根据这些权重值加权求和后得到视频级的特征<span class="math inline">\(\overline{x}=\sum_{t=1}^T{\lambda_t x_t}\)</span>，这一视频级的特征被用来估计视频中包含每种动作的概率，并用多标签交叉熵损失函数来优化。而对学习得到的权重<span class="math inline">\(\lambda=[\lambda_1, \lambda_2,\cdots, \lambda_T]\)</span>，为了能够让让模型自动选择具有代表性的子集，所以使用了L1正则化来增加<span class="math inline">\(\lambda\)</span>的稀疏性。上述两个损失函数组合之后得到最终的损失函数： <span class="math display">\[
+\mathcal{L}=\mathcal{L}_{class}+\beta\cdot\mathcal{L}_{sparsity}
+\]</span> 同时，作者提出了Temporal Class Activation Map（T-CAM），其实就是一个公式变换。注意每个片段的特征<span class="math inline">\(x_t\in R^m\)</span>，公式里的<span class="math inline">\(m\)</span>是特征维数。 <span class="math display">\[
+\begin{align*}
+s^c&amp;=\sum_{k=1}^m{w^c_k\overline{x}_k} \\
+&amp;=\sum_{k=1}^m{w^c_k\sum_{t=1}^T{\lambda_t x_{t,k}}} \\
+&amp;=\sum_{t=1}^T{\lambda_t\sum_{k=1}^m{w^c_k x_{t,k}}}
+\end{align*}
+\]</span></p>
+<p>作者说他的T-CAM可以表示为<span class="math inline">\(a_t=(a_t^1,a_t^2,\cdots,a_t^T)^T\)</span>，其中<span class="math inline">\(a_t^c=\sum_{k=1}^m{w^c_k x_{t,k}}\)</span><strong><em>（这一步实现还是挺有意思的，作者在测试的时候直接获取了全连接层的权重矩阵）</em></strong></p>
+<h3 id="localization-1">Localization</h3>
+<p>以RGB为例，那么首先根据每个片段的权重值得到加权后的T-CAM <span class="math display">\[
+\psi_t^c=\lambda_t\cdot sigmoid(a_t^c)
+\]</span> 记者就是普通的阈值法获得temporal proposal，每个proposal可以表示为<span class="math inline">\([t_{start}, t_{end}, score]\)</span>，score的计算公式如下： <span class="math display">\[
+\sum_{t=t_{start}}^{t_{end}}{\lambda_{t,\star}\frac{\alpha \cdot a_{t,RGB}^{c}+(1-\alpha)\cdot a_{t,FLOW}^{c}}{t_{end} - t_{start} + 1}}
+\]</span> 实际上就是对这个proposal中的T-CAM加权求和，再做一些归一化（去除proposal长度不同带来的影响）。这个score用在NMS，以前的方法是直接选最长的一个proposal，显然不够合理。</p>
+<h2 id="iccv-2019-weakly-supervised-temporal-action-localization-through-contrast-based-evaluation-networks">ICCV-2019 Weakly Supervised Temporal Action Localization through Contrast based Evaluation Networks</h2>
+<p><img data-src="image-20200730101427059.png" /></p>
+<h2 id="cvpr-2017-untrimmednets-for-weakly-supervised-action-recognition-and-detection">CVPR-2017 UntrimmedNets for Weakly Supervised Action Recognition and Detection</h2>
+<p><img data-src="image-20200730121432490.png" /></p>
+<p>首先是片段采样，作者提出了两种采样方法。第一种是均匀采样，把一个视频分成等长的<span class="math inline">\(N\)</span>段，但是这种采样方式没有考虑到动作的连续性和一致性，因此生成的proposal可能是不够准确的；第二种采样方法是基于shot（镜头？）的采样，作者使用每帧的HOG特征的差值来划分shot。计算每帧图像的HOG特征，如果相邻帧之间HOG特征的差值超过了阈值，那么就是上一个shot的结束，下一个shot的开始。然后对每一个shot，每个连续<span class="math inline">\(K\)</span>帧都是一个proposal。</p>
+<p>对每个proposal，使用TSN和双流CNN分别提取特征，比较常规，输入的构造方法和原模型一致。</p>
+<p>分类模块很简单，就是一个全连接层再加一个softmax，得到每个proposal包含某个动作的概率，其中<span class="math inline">\(C\)</span>表示动作类别的个数，<span class="math inline">\(\phi(p)\)</span>表示第<span class="math inline">\(p\)</span>个proposal的特征： <span class="math display">\[
+\begin{align*}
+\mbox{x}^c(p)&amp;=W^c\phi(p)\\
+\mbox{x}^c(p)&amp;=[x^c_1(p),x^c_2(p),\cdots]\\
+\overline{x}^c_i(p)&amp;=\frac{\exp(x^c_i(p))}{\sum_{k=1}^C\exp(x^c_k(p))}
+\end{align*}
+\]</span> 接下来就是选择模块，选择出最有可能包含动作的proposal，作业也提出了两种方法。首先是hard selection，对每个动作类别，分别选出得分（这里用的是softmax之前的值）最高的<span class="math inline">\(k\)</span>个proposal；第二个是soft selection，其实就是标准的attention，是一个跨clip的融合吧。 <span class="math display">\[
+\begin{align*}
+x^s(p)&amp;={w^c}^T\phi(p)\\
+\overline{x}^s(p)&amp;=\frac{\exp(x^s(p))}{\sum_{k=1}^C\exp(x^s(k))}
+\end{align*}
+\]</span> 接着就是融合了，soft selection就根据<span class="math inline">\(\overline{x}^s(p)\)</span>来融合，hard selection因为没有做softmax，就再做一次softmax <span class="math display">\[
+\begin{align*}
+x_i^p(V)&amp;=\sum_{n=1}^{N}{x^s_i(n)x_i^c(n)} \\
+\overline{x}_i^p(V)&amp;=\frac{\exp(x_i^r(V))}{\sum_{k=1}^C\exp(x_k^r(V))} \\
+x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
+\end{align*}
+\]</span></p>
+<p>文中上下标混乱不堪，看懂意思就行了吧。</p>
+<h2 id="eccv-2018-weakly-supervised-temporal-action-localization-in-untrimmed-videos">ECCV-2018 Weakly-supervised Temporal Action Localization in Untrimmed Videos</h2>
+<h2 id="eccv-2018-w-talc-weakly-supervised-temporal-activity-localization-and-classification">ECCV-2018 W-TALC: Weakly Supervised Temporal Activity Localization and Classification</h2>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/07/21/Self-supervised/" rel="prev" title="Self-Supervised">
+                  <i class="fa fa-chevron-left"></i> Self-Supervised
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/30/Fully-Supervised-Action-Localization-and-Temporal-Segment-Proposal/" rel="next" title="Fully-Supervised Action Localization and Temporal Segment Proposal">
+                  Fully-Supervised Action Localization and Temporal Segment Proposal <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2014 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/motion.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/next-boot.min.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/local-search.min.js"></script>
+
+
+
+
+<script data-pjax>
+if (document.querySelectorAll('.mermaid').length) {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/mermaid@8.9.1/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+
+
+    <div class="pjax">
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+    </div>
+</body>
+</html>

@@ -159,11 +159,11 @@ L(P,\omega)=&amp;\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(y|x)}}+\omega_0\left(1-\
     <title>Multi-Frame Pose Estimation</title>
     <url>/2020/07/15/Multi-Frame-Pose-Estimation/</url>
     <content><![CDATA[<h2 id="iccv-2015-flowing-convnets-for-human-pose-estimation-in-videos">ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos</h2>
-<p><img src="Multi-Frame-Pose-Estimation/image-20200715225905146.png" /></p>
+<p><img data-src="image-20200715225905146.png" /></p>
 <p>主要使用光流来提高估计的准确度。首先得到<span class="math inline">\([t-n,t+n]\)</span>帧关节k的热力图，然后计算<span class="math inline">\([t-n,t+n]\)</span>中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记<span class="math inline">\(w_{t+1\rightarrow t}\)</span>为第t+1帧到第t帧的光流，那么<span class="math inline">\(H_{t+1}\)</span>根据光流对齐后的热力图可以表示为 <span class="math display">\[
 \hat{H}_{t+1}(x,y)=H_{t+1}(x-w_x^{t+1\rightarrow t},y-w_y^{t+1\rightarrow t})
 \]</span> 最后经过一个<span class="math inline">\(1*1\)</span>的卷积（也就是通道上的加权平均）得到第t帧关节k的热力图。并且实验从下图的实验结果中可以发现，使用这种pooling的效果更好，而且随着n的增加效果稳步提升。</p>
-<p><img src="Multi-Frame-Pose-Estimation/image-20200715232718905.png" /></p>
+<p><img data-src="image-20200715232718905.png" /></p>
 <h2 id="cvpr-2017-thin-slicing-network-a-deep-structured-model-for-pose-estimation-in-videos">CVPR-2017 Thin-Slicing Network: A Deep Structured Model for Pose Estimation in Videos</h2>
 <p>本文把姿势估计分解成两个子问题，分别是Spatial Consistency和Temporal Consistency。对于Spatial Consistency，作者通过以下公式建模： <span class="math display">\[
 S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
@@ -181,11 +181,11 @@ S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
 \end{align*}
 \]</span> <span class="math inline">\(\psi\)</span>和之前的一样，只是这个<span class="math inline">\(i^\star\)</span>复杂了一点。这里的<span class="math inline">\(E_t\)</span>是把相邻帧之间同一个关节点连接起来的边的结合，也就是下图中的橙色线。<span class="math inline">\(f_{i^\star,i}(x)\)</span>表示的是按照<span class="math inline">\(i^\star\)</span>所在帧到<span class="math inline">\(i\)</span>所在帧的光流移动点<span class="math inline">\(x\)</span>，其实就是下图中左侧<code>flow warp</code>。举个例子，先估计出<span class="math inline">\(t-1\)</span>帧的关节点，然后按照<span class="math inline">\(t-1\)</span>帧到<span class="math inline">\(t\)</span>帧的光流，把每个关节点按照光流做<code>propagate</code>，propagate之后的关节点就是<span class="math inline">\(i^\star\)</span>。</p>
 <p>从不同帧使用Temporal Information估计同一帧的关节点，如果大家估计的差不多，那么说明有很好的一致性，关节点的连续性得到了保证。</p>
-<p><img src="Multi-Frame-Pose-Estimation/image-20200716090204471.png" /></p>
+<p><img data-src="image-20200716090204471.png" /></p>
 <p>最终的目的就是最大化上述两个式子，就能实现时空一致性。</p>
 <h2 id="cvpr-2018-detect-and-track-efficient-pose-estimation-in-videos">CVPR-2018 Detect-and-Track: Efficient Pose Estimation in Videos</h2>
 <p>网络结构如下图所示。其实这个做法非常非常的简单，就是一个多任务学习，收到<code>I3D</code>的启发，把<code>Mask RCNN</code>改成了3D卷积的形式，原来的<code>RPN</code>（<code>Region Proposal Network</code>）改成了<code>TPN</code>（<code>Tube Proposal Network</code>）。这个Tube很好理解，原来RPN是在图上找一个矩形区域，那如果一个视频的话，连续T帧都在同一个位置划定一个矩形，连接起来不就是个Tube了。并且<code>Mask RCNN</code>本来就有一个head是用来做关键点检测的，嗯，所以他主要就是把2D卷积换成了3D卷积。这里的Spatio-Temporal RoIAlign其实就是对每帧上的RoI做RoIAlign，然后再按顺序拼接起来。</p>
-<p><img src="Multi-Frame-Pose-Estimation/image-20200716093209065.png" /></p>
+<p><img data-src="image-20200716093209065.png" /></p>
 <h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
 <p>套个LSTM就完事了，Temporal Information让他自己去学吧。</p>
 ]]></content>
@@ -228,7 +228,7 @@ P=\frac{TP}{TP+FP}
 R=\frac{TP}{TP+FN}
 \]</span></p>
 <p>关于COCO上各个<span class="exturl" data-url="aHR0cHM6Ly9jb2NvZGF0YXNldC5vcmcvI2tleXBvaW50cy1ldmFs">指标<i class="fa fa-external-link-alt"></i></span>的具体定义可以参考下图</p>
-<p><img src="Pose-Estimation-Metrics/image-20210325204226067.png" /></p>
+<p><img data-src="image-20210325204226067.png" /></p>
 <p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pYRl8xOTkxL2FydGljbGUvZGV0YWlscy8xMDQyNzkzODc=">人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客<i class="fa fa-external-link-alt"></i></span></p>
 ]]></content>
       <categories>
@@ -241,23 +241,23 @@ R=\frac{TP}{TP+FN}
     <content><![CDATA[<h2 id="cvpr-2020-unipose-unified-human-pose-estimation-in-single-images-and-videos">CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos</h2>
 <h3 id="wasp">WASP</h3>
 <p>WASP的结构如下图所示（实际上该作者还写过一篇论文<code>Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation</code>，单独写了这个WASP结构，用在语义分割上，这又写了一篇用在姿态识别，水论文么）</p>
-<p><img src="Pose-Estimation/WASP.png" /></p>
+<p><img data-src="WASP.png" /></p>
 <p>作者说是借鉴ASPP、Cascade和Res2Net。</p>
 <p>简单来说，ASPP就是，对于同一个input，用不同dilation的卷积去运算，这样做的好处是在不改变计算量的前提下增大感受野，能够更好的捕捉不同尺度目标的信息。很显然，WASP里面那一行蓝色的就是借用了ASPP里的这一设计思路。</p>
-<p><img src="Pose-Estimation/ASPP.png" /></p>
+<p><img data-src="ASPP.png" /></p>
 <p>Res2Net，多尺度特征融合的一个新方法，而且是从一个更细的粒度上去进行多尺度特征融合。常见的方法例如FPN都是从层这个粒度上去融合多尺度特征的，但是Res2Net是从卷积运算的层面上去进行多尺度特征偶然那个和。需要注意的是，这里是把特征按通道来分成<span class="math inline">\(s\)</span>等份（下图中<span class="math inline">\(s=4\)</span>），然后每一组按照下述方法进行运算，例如<span class="math inline">\(X_2\)</span>仅过<span class="math inline">\(3\times3\)</span>卷积之后得到<span class="math inline">\(K_2\)</span>，<span class="math inline">\(K_2\)</span>和<span class="math inline">\(X_3\)</span>加起来继续<span class="math inline">\(3\times3\)</span>卷积，以此类推。可以看到对于不同组的特征，他们仅过卷积的次数是不一样的，那么感受野也就不一样，所以是不同尺度的特征融合。</p>
-<p><img src="Pose-Estimation/Res2Net.jpg" /></p>
+<p><img data-src="Res2Net.jpg" /></p>
 <p>个人理解Cascade和Res2Net指的都是WASP中每个卷积之间的横向箭头。</p>
-<p><img src="Pose-Estimation/Unipose-Overview.png" /></p>
+<p><img data-src="Unipose-Overview.png" /></p>
 <p>UniPose的整体架构如上图所示。输入一张图片，经过ResNet-101提取特征，然后再进过一个WASP模块提取不同尺度的特征，再进过Decoder将特征转化为热图。</p>
-<p><img src="Pose-Estimation/Unipose-Decoder.png" /></p>
+<p><img data-src="Unipose-Decoder.png" /></p>
 <p>其中的Decoder模块，结构也很简单，就是多个卷积层和Dropout的堆叠，最后用双线性插值上采样到输入大小。这里需要注意Decoder的输入，不仅仅是WASP的输出，还有来自ResNet-101的底层特征，特征融合的过程也比较常规。</p>
 <h3 id="unipose-lstm">UniPose-LSTM</h3>
-<p><img src="Pose-Estimation/Unipose-LSTM.png" /></p>
+<p><img data-src="Unipose-LSTM.png" /></p>
 <p>为了利用视频中的时序信息，作者有提出了UniPose-LSTM。其实也没什么特别的，就是用LSTM连起来。前一帧的heatmap和当前帧的heatmap作为LSTM的输入，经过几次卷积后得到最终的heatmap。但是作者这里没有明确前一帧和当前帧的heatmap是怎么结合在一起的，考虑到作者说参考的是<code>LSTM Pose Machine</code>，而<code>LSTM Pose Machine</code>里就是直接将两帧的特征concat，大胆猜测这里也是将前一帧和当前帧的heatmap做concat。</p>
 <h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
 <p>使用LSTM提取视频中的时序信息，改善视频中关节点预测的连续性，算是用到RNN较早的一篇论文了。模型结构如下图所示，对于第一帧图像，用较浅的ConvNet1得到一个热力图当作上一帧的输出，然后和当前帧通过ConvNet2得到的热力图加起来，再加上一个额外的Central Gaussian Map（CPM里用这个来提高准确率），合在一起作为LSTM的输入，然后LSTM的输出经过ConvNet3解码得到热力图。</p>
-<p><img src="Pose-Estimation/LSTM-Pose-Overview.png" /></p>
+<p><img data-src="LSTM-Pose-Overview.png" /></p>
 <p>ConvNet1、ConvNet2、ConvNet3和CPM中各个模型相同，LSTM用的是Conv-LSTM。主要的不同点在于把矩阵乘法换成了卷积。下面的公式里，<span class="math inline">\(*\)</span>本来是矩阵乘法，在Conv-LSTM中是卷积（一般是<span class="math inline">\(3\times3\)</span>卷积），目的是关注局部信息，全局信息可以用LSTM提取。 <span class="math display">\[
 \begin{align*}
 g_t &amp;= \tanh{(W_{xg}*X_t + W_{hg}*h_{t-1} + b_g)} \\
@@ -279,7 +279,7 @@ h_t &amp;= o_t \odot \tanh{(C_t)}
     <content><![CDATA[<h1 id="what-is-siftscale-invariant-feature-transform">What is SIFT(Scale-invariant Feature Transform)</h1>
 <p>SIFT，它既是一个 Detector，又是一个 Descriptor。SIFT具有尺度不变性、旋转不变性、光照不变性和视角不变性。那么我们为什么需要这些性质呢？</p>
 <p>显然，这些性质是有实际需求的。以尺度不变性为例，当我们在使用 <code>Harris</code> 算子做角点检测时，我们所划定的区域大小直接决定了我们是否能提取到我们所需要的角点。如下图所示，当我们选择的区域大小不同时（图中表示为方块的面积大小），我们所得到的检测结果显然是不同的。当选择图片左侧所示方块大小时，我们看到的是一个角，而如果选择右侧所示方块大小时，我们所检测到的则是边界。可以想象，如果把左侧区域继续放大，那我们最终检测到的将是一个平面。</p>
-<img src="/2018/11/20/SIFT/scale.png" class="" title="Credit:Kristen Grauman">
+<img data-src="/2018/11/20/SIFT/scale.png" class="" title="Credit:Kristen Grauman">
 <p>由此，我们希望能够有一个算法，它能够帮助我们准确地识别出来到底是 edge 还是 corner 亦或者是 flat。</p>
 <h1 id="sift-算法步骤">SIFT 算法步骤</h1>
 <h2 id="构建尺度空间">1. 构建尺度空间</h2>
@@ -291,7 +291,7 @@ L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
 G(x,y,\sigma)=\frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
 \]</span></p>
 <p>为了得到尺度空间，我们选用不同的<span class="math inline">\(\sigma\)</span>来得到一组图片，这一组图片中依次是使用原图像和参数分别为<span class="math inline">\((\sigma, k\sigma, k^2\sigma, k^3\sigma, \cdots)\)</span>进行高斯模糊，我们可以使用<span class="math inline">\(k = \sqrt{2}\)</span>作为倍数。这一组图片我们称为一个 <code>Octave</code>，每个 <code>Octave</code>中有多张图片。我们需要构建多个<code>Octave</code>，每个<code>Octave</code>中图像的大小都是前一组的一半。</p>
-<img src="/2018/11/20/SIFT/sift-octaves.png" class="" title="Credit:aishack.in">
+<img data-src="/2018/11/20/SIFT/sift-octaves.png" class="" title="Credit:aishack.in">
 <h2 id="dogdifference-of-gaussian与-loglaplacian-of-gaussian">2. DoG（Difference of Gaussian）与 LoG（Laplacian of Gaussian）</h2>
 <p>首先我们来看下什么是<code>LoG</code>。<code>LoG</code>就是对高斯核计算二阶导。</p>
 <p><span class="math display">\[
@@ -317,7 +317,7 @@ g_1(x,y)-g_2(x,y)
 \]</span> 这时的<code>DoG</code>已经具有了尺度不变性。</p>
 <h2 id="寻找关键点">3. 寻找关键点</h2>
 <p>要找到关键点，我们只需要找出一个空间最大值即可。</p>
-<img src="/2018/11/20/SIFT/select_max.png" class="" title="Credit:Standford CS131">
+<img data-src="/2018/11/20/SIFT/select_max.png" class="" title="Credit:Standford CS131">
 <p>在一个octave中，我们选择一张图片A，图片A前一张图片为B，后一张图片为C，我们选择A中的一个像素，比较A周围8个像素，B中A对应位置以及其周围8个像素，C中A对应位置以及其周围的8个像素，总计<code>8+9+9=26</code>个像素（上图中X即为所选像素，绿色点代表上述26个像素），如果我们所选的像素是这其中最大或者最小的，那么这个点就是 <code>Interest Point or Keypoint</code>。</p>
 <p>然而，仅仅找到这些关键点是不够的，我们还需要对他们进行筛选。筛选的原则就是我们希望最后得到的关键点是能让<code>DoG</code>最大化的点。这里就需要用到对离散函数的泰勒展开式。</p>
 <p>对一个多元函数，其泰勒展开式可表示为 <span class="math display">\[
@@ -482,17 +482,17 @@ L=\frac{1}{N}\sum_{i}^N{L_{x_i}}=\frac{1}{N}\sum_{i}^N{\sum_{c\ne y_i}\max(0,g_{
 <p>这时候目标检测里所存在的类别不均衡的问题就出来，如果加入background，那么必然大多数帧都应该是background，这时候background和包含感兴趣的动作的帧的数量就会有很大的差异，导致类别不均衡。<strong><em>（目标检测中的Focal Loss说不定可以一试？）</em></strong></p>
 <p>针对这个问题，作者提出了使用Filter Module来找出background并过滤的方法来解决。</p>
 <h3 id="method">Method</h3>
-<p><img src="Weakly-supervised-Action-Localization/image-20200727175656099.png" /></p>
+<p><img data-src="image-20200727175656099.png" /></p>
 <p>上图就是作者提出的BaSNet（<strong>Ba</strong>ckground <strong>S</strong>uppression <strong>Net</strong>work），左边的特征提取用的是I3D双流网络，特征提取部分不参与网络的训练。给定一个长度为<span class="math inline">\(T\)</span>帧的视频片段，分别提取RGB和光流特征<span class="math inline">\(R^{F\times T}\)</span>，拼接起来之后得到整个片段的特征<span class="math inline">\(R^{2F\times T}\)</span>。</p>
 <p>网络采用双分支的结构，第一个base branch和其他网络类似，通过一个<span class="math inline">\(1\times 1\)</span>卷积得到<code>Class Activation Sequence(CAS)</code>。若数据集中一共有<span class="math inline">\(C\)</span>个动作类别，那么得到的CAS就是<span class="math inline">\(R^{(C+1)\times T}\)</span>，通道<span class="math inline">\(i\)</span>都表示片段中每一帧包含动作<span class="math inline">\(i\)</span>的得分，然后计算每个通道top-k的均值得到<span class="math inline">\(R^{(C+1)}\)</span>，设就是<code>video-level class score</code>了；对于第二个Suppression branch，就是多了一个加权的过程，对片段的特征做两个<span class="math inline">\(1\times 1\)</span>卷积，得到每帧不是background的概率，将这个概率和片段特征相乘之后再获得<code>CAS</code>，方法和base branch相同，并且卷积的参数是共享<strong><em>（这也可以？？）</em></strong>。</p>
 <p>这里有一个小细节，在base branch，所有帧的background这个类都设置为1，而在suppression branch这都设置为0，作者说这是为了让suppression branch正确区分是否是background。</p>
 <p>模型的损失是Binary Cross Entropy，就是每次判断是否是类别<span class="math inline">\(i\)</span>，而不是去判断他是C类中的哪一个，这样可以降低其他类别的影响，适合于<code>Multi-label</code>的任务（<code>Multi-class</code>是指数据集中的样本可被分为2以上的类别，<code>Multi-label</code>是指数据集中每个样本可以属于多个不同的类别）。</p>
 <p>最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一致。</p>
 <h2 id="cvpr-2019-completeness-modeling-and-context-separation-for-weakly-supervised-temporal-action-localization">CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization</h2>
-<p><img src="Weakly-supervised-Action-Localization/image-20200728161945465.png" /></p>
+<p><img data-src="image-20200728161945465.png" /></p>
 <p>主要针对两个问题，一是动作的完整性，比如上图上方射门的例子，包含运动员射门和球飞行两个自动做，作者通过设计多个不同的分支网络，让他们分别关注动作的不同部分，最后求均值来获取更好的CAS。二是动作的上下文和一般的background是不一样的，例如上图下方，台球桌对识别打台球的动作是有帮助的，而且通常出现在动作发生的前后，其分布是有一定规律的，但是background的分布是随机的，同时这些动作上下文也会干扰动作区间的检测，作者通过构造难例来解决。</p>
 <h3 id="method-1">Method</h3>
-<p><img src="Weakly-supervised-Action-Localization/image-20200728162426054.png" /></p>
+<p><img data-src="image-20200728162426054.png" /></p>
 <p>上图是作者提出的模型结构，首先是提取视频特征<span class="math inline">\(R^{T\times D}\)</span>，这里的<span class="math inline">\(T\)</span>作者说是片段数（the number of snippets）。因为预训练的特征提取网络所提取的特征可能不完全适应action localization，所以添加一个Embedding层，得到特征<span class="math inline">\(R^{T\times F}\)</span>。这个特征分别被被送到<span class="math inline">\(K\)</span>分类分支中去，其实就是一个<span class="math inline">\(1\times 1\)</span>卷积，然后再做<code>Softmax</code>得到CAS。为了防止这<span class="math inline">\(K\)</span>各分支学习到相同（或极其相似）的信息，作者加入了一个diversity loss，其中<span class="math inline">\(\overline{A^i_{\star,c}}\)</span>表示<code>Softmax</code>之后第<span class="math inline">\(i\)</span>个branch的第<span class="math inline">\(c\)</span>个类别的CAS <span class="math display">\[
 \mathcal{L}_{div}=\frac{1}{K(K-1)(C+1)/2}\sum_{c=1}^{C+1}{\sum_{i=1}^{K-1}{\sum_{j=i+1}^{K}}{\frac{\overline{A^i_{\star,c}}\cdot\overline{A^j_{\star,c}}}{\Vert\overline{A^i_{\star,c}}\Vert\ \Vert\overline{A^j_{\star,c}}\Vert}}}
 \]</span> 实际上就是让各个分支之间CAS的相似度尽可能小，也就是说不同的branch要在不同的时刻得到较高的激活值，这就能解决动作完整性的，问题，相当于每个branch关注动作的不同部分，虽然单个来看是不够完整的，但是拼在一起就是一个好的结果。</p>
@@ -505,10 +505,10 @@ L=\frac{1}{N}\sum_{i}^N{L_{x_i}}=\frac{1}{N}\sum_{i}^N{\sum_{c\ne y_i}\max(0,g_{
 \]</span></p>
 <h3 id="localization">Localization</h3>
 <p>有点复杂。输入一个测试视频，得到它包含每个动作的概率，不考虑background，去掉所有包含这个动作的概率小于于0.1的CAS；在剩余的CAS中，利用<span class="math inline">\(\overline{A^{avg}_{\star,c}}\)</span>作为阈值选出大于阈值的片段，然后这些片段就作为一个proposal。接下来使用一些公式来个每个片段打个分，实际上就是他同时考虑这个片段的CAS均值和这个片段附近的CAS均值<strong><em>（可这个分有什么用呢？答：作为区间的置信度，用于NMS）</em></strong></p>
-<p><img src="Weakly-supervised-Action-Localization/image-20200728233533139.png" /></p>
+<p><img data-src="image-20200728233533139.png" /></p>
 <h2 id="cvpr-2018-weakly-supervised-action-localization-by-sparse-temporal-pooling-network">CVPR-2018 Weakly Supervised Action Localization by Sparse Temporal Pooling Network</h2>
 <p>作者认为行为可以通过识别视频中的一些关键片段来识别，所以作者提出了一个能够自动学习片段重要性的网络，并自动选择一个具有代表性的自己来识别视频中的行为。</p>
-<p><img src="Weakly-supervised-Action-Localization/image-20200729092337446.png" /></p>
+<p><img data-src="image-20200729092337446.png" /></p>
 <p>每个视频被分为<span class="math inline">\(T\)</span>个片段，每个以第<span class="math inline">\(t\)</span>帧为中心的视频片段都被表示成特征<span class="math inline">\(x_t\in R^m\)</span>，每个特征通过一个Attention Module得到一个该片段的权重值<span class="math inline">\(\lambda_t\)</span>，根据这些权重值加权求和后得到视频级的特征<span class="math inline">\(\overline{x}=\sum_{t=1}^T{\lambda_t x_t}\)</span>，这一视频级的特征被用来估计视频中包含每种动作的概率，并用多标签交叉熵损失函数来优化。而对学习得到的权重<span class="math inline">\(\lambda=[\lambda_1, \lambda_2,\cdots, \lambda_T]\)</span>，为了能够让让模型自动选择具有代表性的子集，所以使用了L1正则化来增加<span class="math inline">\(\lambda\)</span>的稀疏性。上述两个损失函数组合之后得到最终的损失函数： <span class="math display">\[
 \mathcal{L}=\mathcal{L}_{class}+\beta\cdot\mathcal{L}_{sparsity}
 \]</span> 同时，作者提出了Temporal Class Activation Map（T-CAM），其实就是一个公式变换。注意每个片段的特征<span class="math inline">\(x_t\in R^m\)</span>，公式里的<span class="math inline">\(m\)</span>是特征维数。 <span class="math display">\[
@@ -526,9 +526,9 @@ s^c&amp;=\sum_{k=1}^m{w^c_k\overline{x}_k} \\
 \sum_{t=t_{start}}^{t_{end}}{\lambda_{t,\star}\frac{\alpha \cdot a_{t,RGB}^{c}+(1-\alpha)\cdot a_{t,FLOW}^{c}}{t_{end} - t_{start} + 1}}
 \]</span> 实际上就是对这个proposal中的T-CAM加权求和，再做一些归一化（去除proposal长度不同带来的影响）。这个score用在NMS，以前的方法是直接选最长的一个proposal，显然不够合理。</p>
 <h2 id="iccv-2019-weakly-supervised-temporal-action-localization-through-contrast-based-evaluation-networks">ICCV-2019 Weakly Supervised Temporal Action Localization through Contrast based Evaluation Networks</h2>
-<p><img src="Weakly-supervised-Action-Localization/image-20200730101427059.png" /></p>
+<p><img data-src="image-20200730101427059.png" /></p>
 <h2 id="cvpr-2017-untrimmednets-for-weakly-supervised-action-recognition-and-detection">CVPR-2017 UntrimmedNets for Weakly Supervised Action Recognition and Detection</h2>
-<p><img src="Weakly-supervised-Action-Localization/image-20200730121432490.png" /></p>
+<p><img data-src="image-20200730121432490.png" /></p>
 <p>首先是片段采样，作者提出了两种采样方法。第一种是均匀采样，把一个视频分成等长的<span class="math inline">\(N\)</span>段，但是这种采样方式没有考虑到动作的连续性和一致性，因此生成的proposal可能是不够准确的；第二种采样方法是基于shot（镜头？）的采样，作者使用每帧的HOG特征的差值来划分shot。计算每帧图像的HOG特征，如果相邻帧之间HOG特征的差值超过了阈值，那么就是上一个shot的结束，下一个shot的开始。然后对每一个shot，每个连续<span class="math inline">\(K\)</span>帧都是一个proposal。</p>
 <p>对每个proposal，使用TSN和双流CNN分别提取特征，比较常规，输入的构造方法和原模型一致。</p>
 <p>分类模块很简单，就是一个全连接层再加一个softmax，得到每个proposal包含某个动作的概率，其中<span class="math inline">\(C\)</span>表示动作类别的个数，<span class="math inline">\(\phi(p)\)</span>表示第<span class="math inline">\(p\)</span>个proposal的特征： <span class="math display">\[

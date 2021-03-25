@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="5AUIVYTbHIAuz-eQtxSfZbWW5eg9_EVZMSQycIuXrG0">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="熵 熵的定义 在信息论和概率统计中，熵（Entropy）是表示随机变量不确定性的度量。 \(X\)是一个取有限个值的离散随机变量，其概率分布为 \[ P(X&#x3D;x_i)&#x3D;p_i,\ i&#x3D;1,2,3\cdots n \] 则随机变量\(X\)的熵定义为 \[ H(X)&#x3D;-\sum_{i&#x3D;1}^{n}{p_i\log{p_i}}\\ p_i&#x3D;0 \Rightarrow p_i\log{p_">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最大熵模型">
+<meta property="og:url" content="https://andersonzhangyq.github.io/2018/12/04/Max-Ent/index.html">
+<meta property="og:site_name" content="Anderson&#39;s Blog">
+<meta property="og:description" content="熵 熵的定义 在信息论和概率统计中，熵（Entropy）是表示随机变量不确定性的度量。 \(X\)是一个取有限个值的离散随机变量，其概率分布为 \[ P(X&#x3D;x_i)&#x3D;p_i,\ i&#x3D;1,2,3\cdots n \] 则随机变量\(X\)的熵定义为 \[ H(X)&#x3D;-\sum_{i&#x3D;1}^{n}{p_i\log{p_i}}\\ p_i&#x3D;0 \Rightarrow p_i\log{p_">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-04T01:46:18.000Z">
+<meta property="article:modified_time" content="2020-07-21T09:11:16.571Z">
+<meta property="article:author" content="Anderson Zhang">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://andersonzhangyq.github.io/2018/12/04/Max-Ent/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>最大熵模型 | Anderson's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108155018-3"></script>
+    <script data-pjax>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-108155018-3');
+      }
+    </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Anderson's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%86%B5"><span class="nav-number">1.</span> <span class="nav-text">熵</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%86%B5%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">熵的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E7%86%B5"><span class="nav-number">1.2.</span> <span class="nav-text">条件熵</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E7%86%B5%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">最大熵模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E7%86%B5%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">最大熵原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E7%86%B5%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.2.</span> <span class="nav-text">最大熵模型的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C%E5%88%86%E5%B8%83"><span class="nav-number">2.2.1.</span> <span class="nav-text">经验分布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">特征函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E7%86%B5%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.</span> <span class="nav-text">最大熵模型的学习</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anderson Zhang"
+      src="/images/logo.svg">
+  <p class="site-author-name" itemprop="name">Anderson Zhang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL0FuZGVyc29uWmhhbmd5cQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AndersonZhangyq"><i class="fab fa-github fa-fw"></i></span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmFuZGVyc29uemhhbmd5cUBnbWFpbC5jb20=" title="E-Mail → mailto:andersonzhangyq@gmail.com"><i class="envelope fa-fw"></i></span>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <span class="exturl cc-opacity" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2018/12/04/Max-Ent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          最大熵模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-04 09:46:18" itemprop="dateCreated datePublished" datetime="2018-12-04T09:46:18+08:00">2018-12-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="熵">熵</h1>
+<h2 id="熵的定义">熵的定义</h2>
+<p>在信息论和概率统计中，熵（Entropy）是表示随机变量不确定性的度量。</p>
+<p><span class="math inline">\(X\)</span>是一个取有限个值的离散随机变量，其概率分布为 <span class="math display">\[
+P(X=x_i)=p_i,\ i=1,2,3\cdots n
+\]</span> 则随机变量<span class="math inline">\(X\)</span>的熵定义为 <span class="math display">\[
+H(X)=-\sum_{i=1}^{n}{p_i\log{p_i}}\\
+p_i=0 \Rightarrow p_i\log{p_i}=0
+\]</span> 可以证明：0 H(X) </p>
+<p>熵的最小值是0是显然的，下面用拉格朗日乘数法来证明熵的最大值是<span class="math inline">\(\log{n}\)</span> <span class="math display">\[
+\begin{align*}
+\max \ \ &amp;H(X)\\
+s.t. \ \ &amp;\sum_{i=1}^{n}p_i=1\\
+L(p_i,\omega)&amp;=-\sum_{i=1}^{n}{p_i\log{p_i}}+\omega(\sum_{i=1}^{n}{p_i}-1)\\
+let \ \ 0&amp;=\frac{\partial L}{\partial p_i}\\
+&amp;=-\log{p_i}-p_i\frac{1}{p_i\ln{2}}+\omega\\
+&amp;=-\log{p_i}-\frac{1}{\ln{2}}+\omega\\
+\therefore \log{p_i}&amp;=-\frac{1}{\ln{2}}+\omega\\
+\therefore \log{p_1}&amp;=\log{p_2}=\cdots =\log{p_n}\\
+\therefore p_1&amp;=p_2=\cdots =p_n\\
+\therefore p_i&amp;=\frac{1}{n}
+\end{align*}
+\]</span> 带入p_i=后得到熵的最大值是</p>
+<h2 id="条件熵">条件熵</h2>
+<p>条件熵<span class="math inline">\(H(Y|X)\)</span>表示在已知随机变量<span class="math inline">\(X\)</span>的条件下随机变量Y的不确定性。随机变量<span class="math inline">\(X\)</span>给定点条件下随机变量Y的条件熵<span class="math inline">\(H(Y|X)\)</span>可表示为： <span class="math display">\[
+H(Y|X)=-\sum_{x,y}^{}{P(x,y)\log{P(Y|X)}}
+\]</span></p>
+<h1 id="最大熵模型">最大熵模型</h1>
+<h2 id="最大熵原理">最大熵原理</h2>
+<p>最大熵原理是概率模型学习的一个准则。最大熵原理认为，学习概率模型时，在所有可能的概率模型（分布）中，熵最大的模型是最好的模型。通常用约束条件来确定概率模型的集合，所以，最大熵原理也可表述为在满足约束条件的模型集合中选取熵最大的模型。</p>
+<p>在上一节中，已经证明了当随机变量<span class="math inline">\(X\)</span>服从均匀分布时，熵最大。也就是说，当我们没有更多信息的情况下，那些不确定的部分都是等可能的。</p>
+<h2 id="最大熵模型的定义">最大熵模型的定义</h2>
+<p>将最大熵原理应用到分类得到最大熵模型</p>
+<blockquote>
+<p>假设分类模型是一个条件概率分布<span class="math inline">\(P(Y|X)\)</span>，<span class="math inline">\(X\in \mathcal{X} \subseteq R^n\)</span>表示输入，<span class="math inline">\(Y \in \mathcal{Y}\)</span>表示输出，<span class="math inline">\(\mathcal{X}\)</span>和<span class="math inline">\(\mathcal{Y}\)</span>分别是输入和输出的集合，这个模型表示的是对于给定点输入<span class="math inline">\(X\)</span>，以条件概率<span class="math inline">\(P(Y|X)\)</span>输出<span class="math inline">\(Y\)</span></p>
+</blockquote>
+<p>给定一个训练数据集 <span class="math display">\[
+T=\{(x_1, y_1),(x_2, y_2),\cdots,(x_n, y_n)\}
+\]</span> 学习的目标是用最大熵原理选择最好的分类模型</p>
+<h3 id="经验分布">经验分布</h3>
+<p>首先考虑模型应该满足的条件。给定数据集，可以确定联合分布<span class="math inline">\(P(X,Y)\)</span>的经验分布<span class="math inline">\(\tilde{P}(X,Y)\)</span>和边缘分布<span class="math inline">\(P(X)\)</span>的经验分布<span class="math inline">\(\tilde{P}(X)\)</span> <span class="math display">\[
+\begin{align*}
+\tilde{P}(X=x,Y=y)&amp;=\frac{v(X=x,Y=y)}{N}\\
+\tilde{P}(X=x)&amp;=\frac{v(X=x)}{N}
+\end{align*}
+\]</span> 其中<span class="math inline">\(v(X=x,Y=y)\)</span>表示训练数据中样本<span class="math inline">\((x,y)\)</span>出现的频数，<span class="math inline">\(v(X=x)\)</span>表示训练数据中输入<span class="math inline">\(x\)</span>出现的频数，<span class="math inline">\(N\)</span>表示训练样本容量。</p>
+<p>由于真实的边缘分布不可知，我们使用贝叶斯公式<span class="math inline">\(P(x,y)=P(y|x)P(x)\)</span>将其转化为条件概率和输入<span class="math inline">\(x\)</span>的边缘分布的乘积，并使用输入<span class="math inline">\(x\)</span>的经验分布来近似，由此得到模型优化的目标函数 <span class="math display">\[
+\begin{align*}
+max \ \ H(Y|X)&amp;=-\sum_{x,y}^{}{P(x,y)\log{P(Y|X)}}\\
+&amp;\approx-\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}
+\end{align*}
+\]</span></p>
+<h3 id="特征函数">特征函数</h3>
+<p>用特征函数<span class="math inline">\(f(x,y)\)</span>描述输入<span class="math inline">\(x\)</span>与输出<span class="math inline">\(y\)</span>之间的某一个事实，定义为： <span class="math display">\[
+\begin{equation*}
+f(x,y)=\left\{
+\begin{aligned}
+1, \ &amp; if \ (x, y) \ meets \ the \ demand\\
+0, \ &amp; otherwise \\
+\end{aligned}
+\right.
+\end{equation*}
+\]</span> 它是一个二值函数，当<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>满足这个事实时取值为1，否则取值为0</p>
+<p>我们希望模型尽可能多的从训练数据中得到信息，于是我们假设特征函数关于经验分布<span class="math inline">\(\tilde{P}(X,Y)\)</span>的期望值<span class="math inline">\(E_{\tilde{p}}(f)\)</span>与其关于模型的期望值<span class="math inline">\(E_p(f)\)</span>相等。</p>
+<p>其中<span class="math inline">\(E_{\tilde{p}}(f)\)</span>可表示为 <span class="math display">\[
+E_{\tilde{p}}(f)=\sum_{x,y}\tilde{P}(x,y)f(x,y)
+\]</span> <span class="math inline">\(E_p(f)\)</span>可近似为 <span class="math display">\[
+\begin{align*}
+E_p(f)&amp;=\sum_{x,y}P(x,y)f(x,y)\\
+&amp;\approx\sum_{x,y}P(y|x)P(x)f(x,y)\\
+&amp;\approx\sum_{x,y}\tilde{P}(x)P(y|x)f(x,y)
+\end{align*}
+\]</span> 由此，我们得到模型的一个约束 <span class="math display">\[
+\begin{align*}
+E_p(f)&amp;=E_{\tilde{p}}(f)\\
+\sum_{x,y}\tilde{P}(x)P(y|x)f(x,y)&amp;=\sum_{x,y}\tilde{P}(x,y)f(x,y)
+\end{align*}
+\]</span></p>
+<h1 id="最大熵模型的学习">最大熵模型的学习</h1>
+<p>在开始模型学习之前，我们还需要增加一个显然的约束条件：<span class="math inline">\(\sum_{x,y}P(y|x)=1\)</span>。</p>
+<p>最大熵模型的学习可以形式化为带约束条件的最优化问题：</p>
+<blockquote>
+<p>给定训练数据集<span class="math inline">\(T=\{(x_1, y_1),(x_2, y_2),\cdots,(x_n, y_n)\}\)</span>以及特征函数<span class="math inline">\(f_i(x,y), \ i=1,2,3,\cdots m\)</span>，最大熵模型的学习等价于如下最优化问题 <span class="math display">\[
+\begin{align*}
+\max \ \  &amp;-\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}\\
+s.t. \ \ &amp;\sum_{y}P(y|x)=1\\
+&amp;\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)=\sum_{x,y}\tilde{P}(x,y)f_i(x,y) \ \ i=1,2,3,\cdots m
+\end{align*}
+\]</span></p>
+</blockquote>
+<p>我们可以通过解决对偶问题的方式来进行学习</p>
+<p>我们将上述最大化问题转化为等价的最小化问题，即在所需最大化的函数前加上负号，接着引进拉格朗日乘子<span class="math inline">\(\omega_0,\omega_1,\omega_2,\cdots,\omega_m\)</span>，定义拉格朗日函数<span class="math inline">\(L(P,\omega)\)</span> <span class="math display">\[
+\begin{align*}
+L(P,\omega)&amp;=\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}+\omega_0\left(1-\sum_{x,y}P(y|x)\right)\\
+&amp;\ \ \ \ +\sum_{i=1}^{n}\omega_i\left(\sum_{x,y}\tilde{P}(x,y)f_i(x,y)-\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)\right) \tag{1}
+\end{align*}
+\]</span> 最优化问题的原始问题是 <span class="math display">\[
+\min_{P\in C} \max_{\omega} L(P,\omega)
+\]</span> 对偶问题是 <span class="math display">\[
+\max_{\omega} \min_{P\in C} L(P,\omega)
+\]</span></p>
+<p>首先求解极小化问题<span class="math inline">\(\min_{P\in C} L(P,\omega)\)</span> <span class="math display">\[
+\begin{align*}
+0=\frac{\partial L(P,\omega)}{\partial P(y|x)}&amp;=\tilde{P}(x)\left(\log{P(y|x)} + P(y|x)\frac{1}{P(y|x)}\right)-\omega_0-\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\\
+\log{P(y|x)}&amp;=\frac{\left(\omega_0+\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\right)}{\tilde{P}(x)}-1\\
+P(y|x)&amp;=\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)}\exp\left(\frac{\omega_0}{\tilde{P}(x)}-1\right)
+\end{align*}
+\]</span></p>
+<p>由于约束<span class="math inline">\(\sum_{y}P(y|x)=1\)</span>，将上式抽象为 <span class="math display">\[
+P(y|x)=\exp{\left(\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\right)}\frac{1}{Z_{\omega}(x)} \tag{2}
+\]</span> 后带入约束得 <span class="math display">\[
+\begin{align*}
+1&amp;=\sum_{y}\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)}\frac{1}{Z_{\omega}(x)}\\
+Z_{\omega}(x)&amp;=\sum_{y}\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)} \tag{3}
+\end{align*}
+\]</span> 最后将公式(2)、公式(3)带入到公式(1)中，得到所需最大化的函数 <span class="math display">\[
+\begin{align*}
+L(P,\omega)=&amp;\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(y|x)}}+\omega_0\left(1-\sum_{x,y}P(y|x)\right)\\
+&amp;+\sum_{i=1}^{n}\omega_i\left(\sum_{x,y}\tilde{P}(x,y)f_i(x,y)-\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)\right)
+\end{align*}
+\]</span></p>
+<h1 id="reference">Reference</h1>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ZfSlVMWV92L2FydGljbGUvZGV0YWlscy80MDUwODQ2NQ==">最大熵模型<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/20/SIFT/" rel="prev" title="SIFT">
+                  <i class="fa fa-chevron-left"></i> SIFT
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/11/SVM-gradient/" rel="next" title="SVM 梯度">
+                  SVM 梯度 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2014 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Anderson</span>
+</div>
+  <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/utils.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/motion.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/schemes/muse.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/next-boot.min.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-theme-next@8.2.2/source/js/local-search.min.js"></script>
+
+
+
+
+<script data-pjax>
+if (document.querySelectorAll('.mermaid').length) {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/mermaid@8.9.1/dist/mermaid.min.js', () => {
+    mermaid.init({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    }, '.mermaid');
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+
+
+    <div class="pjax">
+
+  <script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              const target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+    script.defer = true;
+    document.head.appendChild(script);
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.typesetClear();
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+
+
+    </div>
+</body>
+</html>
