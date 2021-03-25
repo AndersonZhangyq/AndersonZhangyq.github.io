@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>C++ Interview</title>
+    <url>/2021/03/19/C-Interview/</url>
+    <content><![CDATA[<h2 id="const">const</h2>
+<p><code>Constant object can only call const member function</code></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    A() &#123; &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// const可用于对重载函数的区分</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;a&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;b&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> A a;</span><br><span class="line">    a.getValue(); <span class="comment">// output: b</span></span><br><span class="line">    A b;</span><br><span class="line">    b.getValue(); <span class="comment">// output: a</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="inline">inline</h2>
+<p>是否内联，程序员不可控。内联函数只是对编译器的建议，是否对函数内联，决定权在于编译器。</p>
+<p>虚函数也可以是内联函数</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;  </span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">who</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;I am Base\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~Base() &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">who</span><span class="params">()</span>  <span class="comment">// 不写inline时隐式内联</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;I am Derived\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 此处的虚函数 who()，是通过类（Base）的具体对象（b）来调用的，编译期间就能确定了，所以它可以是内联的，但最终是否内联取决于编译器。 </span></span><br><span class="line">    Base b;</span><br><span class="line">    b.who();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 此处的虚函数是通过指针调用的，呈现多态性，需要在运行时期间才能确定，所以不能为内联。  </span></span><br><span class="line">    Base *ptr = <span class="keyword">new</span> Derived();</span><br><span class="line">    ptr-&gt;who();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>Fully-Supervised Action Localization and Temporal Segment Proposal</title>
+    <url>/2020/07/30/Fully-Supervised-Action-Localization-and-Temporal-Segment-Proposal/</url>
+    <content><![CDATA[<p>Action Localization任务是回归出视频中感兴趣动作发生的起始时间和结束时间，而Temporal Segment Proposal通常作为Action Localization的一个子任务，目标是得到高质量的包含动作的区间，并且这个算法应该尽可能地快。</p>
+]]></content>
+      <categories>
+        <category>Action Localization</category>
+        <category>Temporal Segment Proposal</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>最大熵模型</title>
+    <url>/2018/12/04/Max-Ent/</url>
+    <content><![CDATA[<h1 id="熵">熵</h1>
+<h2 id="熵的定义">熵的定义</h2>
+<p>在信息论和概率统计中，熵（Entropy）是表示随机变量不确定性的度量。</p>
+<p><span class="math inline">\(X\)</span>是一个取有限个值的离散随机变量，其概率分布为 <span class="math display">\[
+P(X=x_i)=p_i,\ i=1,2,3\cdots n
+\]</span> 则随机变量<span class="math inline">\(X\)</span>的熵定义为 <span class="math display">\[
+H(X)=-\sum_{i=1}^{n}{p_i\log{p_i}}\\
+p_i=0 \Rightarrow p_i\log{p_i}=0
+\]</span> 可以证明：0 H(X) </p>
+<p>熵的最小值是0是显然的，下面用拉格朗日乘数法来证明熵的最大值是<span class="math inline">\(\log{n}\)</span> <span class="math display">\[
+\begin{align*}
+\max \ \ &amp;H(X)\\
+s.t. \ \ &amp;\sum_{i=1}^{n}p_i=1\\
+L(p_i,\omega)&amp;=-\sum_{i=1}^{n}{p_i\log{p_i}}+\omega(\sum_{i=1}^{n}{p_i}-1)\\
+let \ \ 0&amp;=\frac{\partial L}{\partial p_i}\\
+&amp;=-\log{p_i}-p_i\frac{1}{p_i\ln{2}}+\omega\\
+&amp;=-\log{p_i}-\frac{1}{\ln{2}}+\omega\\
+\therefore \log{p_i}&amp;=-\frac{1}{\ln{2}}+\omega\\
+\therefore \log{p_1}&amp;=\log{p_2}=\cdots =\log{p_n}\\
+\therefore p_1&amp;=p_2=\cdots =p_n\\
+\therefore p_i&amp;=\frac{1}{n}
+\end{align*}
+\]</span> 带入p_i=后得到熵的最大值是</p>
+<h2 id="条件熵">条件熵</h2>
+<p>条件熵<span class="math inline">\(H(Y|X)\)</span>表示在已知随机变量<span class="math inline">\(X\)</span>的条件下随机变量Y的不确定性。随机变量<span class="math inline">\(X\)</span>给定点条件下随机变量Y的条件熵<span class="math inline">\(H(Y|X)\)</span>可表示为： <span class="math display">\[
+H(Y|X)=-\sum_{x,y}^{}{P(x,y)\log{P(Y|X)}}
+\]</span></p>
+<h1 id="最大熵模型">最大熵模型</h1>
+<h2 id="最大熵原理">最大熵原理</h2>
+<p>最大熵原理是概率模型学习的一个准则。最大熵原理认为，学习概率模型时，在所有可能的概率模型（分布）中，熵最大的模型是最好的模型。通常用约束条件来确定概率模型的集合，所以，最大熵原理也可表述为在满足约束条件的模型集合中选取熵最大的模型。</p>
+<p>在上一节中，已经证明了当随机变量<span class="math inline">\(X\)</span>服从均匀分布时，熵最大。也就是说，当我们没有更多信息的情况下，那些不确定的部分都是等可能的。</p>
+<h2 id="最大熵模型的定义">最大熵模型的定义</h2>
+<p>将最大熵原理应用到分类得到最大熵模型</p>
+<blockquote>
+<p>假设分类模型是一个条件概率分布<span class="math inline">\(P(Y|X)\)</span>，<span class="math inline">\(X\in \mathcal{X} \subseteq R^n\)</span>表示输入，<span class="math inline">\(Y \in \mathcal{Y}\)</span>表示输出，<span class="math inline">\(\mathcal{X}\)</span>和<span class="math inline">\(\mathcal{Y}\)</span>分别是输入和输出的集合，这个模型表示的是对于给定点输入<span class="math inline">\(X\)</span>，以条件概率<span class="math inline">\(P(Y|X)\)</span>输出<span class="math inline">\(Y\)</span></p>
+</blockquote>
+<p>给定一个训练数据集 <span class="math display">\[
+T=\{(x_1, y_1),(x_2, y_2),\cdots,(x_n, y_n)\}
+\]</span> 学习的目标是用最大熵原理选择最好的分类模型</p>
+<h3 id="经验分布">经验分布</h3>
+<p>首先考虑模型应该满足的条件。给定数据集，可以确定联合分布<span class="math inline">\(P(X,Y)\)</span>的经验分布<span class="math inline">\(\tilde{P}(X,Y)\)</span>和边缘分布<span class="math inline">\(P(X)\)</span>的经验分布<span class="math inline">\(\tilde{P}(X)\)</span> <span class="math display">\[
+\begin{align*}
+\tilde{P}(X=x,Y=y)&amp;=\frac{v(X=x,Y=y)}{N}\\
+\tilde{P}(X=x)&amp;=\frac{v(X=x)}{N}
+\end{align*}
+\]</span> 其中<span class="math inline">\(v(X=x,Y=y)\)</span>表示训练数据中样本<span class="math inline">\((x,y)\)</span>出现的频数，<span class="math inline">\(v(X=x)\)</span>表示训练数据中输入<span class="math inline">\(x\)</span>出现的频数，<span class="math inline">\(N\)</span>表示训练样本容量。</p>
+<p>由于真实的边缘分布不可知，我们使用贝叶斯公式<span class="math inline">\(P(x,y)=P(y|x)P(x)\)</span>将其转化为条件概率和输入<span class="math inline">\(x\)</span>的边缘分布的乘积，并使用输入<span class="math inline">\(x\)</span>的经验分布来近似，由此得到模型优化的目标函数 <span class="math display">\[
+\begin{align*}
+max \ \ H(Y|X)&amp;=-\sum_{x,y}^{}{P(x,y)\log{P(Y|X)}}\\
+&amp;\approx-\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}
+\end{align*}
+\]</span></p>
+<h3 id="特征函数">特征函数</h3>
+<p>用特征函数<span class="math inline">\(f(x,y)\)</span>描述输入<span class="math inline">\(x\)</span>与输出<span class="math inline">\(y\)</span>之间的某一个事实，定义为： <span class="math display">\[
+\begin{equation*}
+f(x,y)=\left\{
+\begin{aligned}
+1, \ &amp; if \ (x, y) \ meets \ the \ demand\\
+0, \ &amp; otherwise \\
+\end{aligned}
+\right.
+\end{equation*}
+\]</span> 它是一个二值函数，当<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>满足这个事实时取值为1，否则取值为0</p>
+<p>我们希望模型尽可能多的从训练数据中得到信息，于是我们假设特征函数关于经验分布<span class="math inline">\(\tilde{P}(X,Y)\)</span>的期望值<span class="math inline">\(E_{\tilde{p}}(f)\)</span>与其关于模型的期望值<span class="math inline">\(E_p(f)\)</span>相等。</p>
+<p>其中<span class="math inline">\(E_{\tilde{p}}(f)\)</span>可表示为 <span class="math display">\[
+E_{\tilde{p}}(f)=\sum_{x,y}\tilde{P}(x,y)f(x,y)
+\]</span> <span class="math inline">\(E_p(f)\)</span>可近似为 <span class="math display">\[
+\begin{align*}
+E_p(f)&amp;=\sum_{x,y}P(x,y)f(x,y)\\
+&amp;\approx\sum_{x,y}P(y|x)P(x)f(x,y)\\
+&amp;\approx\sum_{x,y}\tilde{P}(x)P(y|x)f(x,y)
+\end{align*}
+\]</span> 由此，我们得到模型的一个约束 <span class="math display">\[
+\begin{align*}
+E_p(f)&amp;=E_{\tilde{p}}(f)\\
+\sum_{x,y}\tilde{P}(x)P(y|x)f(x,y)&amp;=\sum_{x,y}\tilde{P}(x,y)f(x,y)
+\end{align*}
+\]</span></p>
+<h1 id="最大熵模型的学习">最大熵模型的学习</h1>
+<p>在开始模型学习之前，我们还需要增加一个显然的约束条件：<span class="math inline">\(\sum_{x,y}P(y|x)=1\)</span>。</p>
+<p>最大熵模型的学习可以形式化为带约束条件的最优化问题：</p>
+<blockquote>
+<p>给定训练数据集<span class="math inline">\(T=\{(x_1, y_1),(x_2, y_2),\cdots,(x_n, y_n)\}\)</span>以及特征函数<span class="math inline">\(f_i(x,y), \ i=1,2,3,\cdots m\)</span>，最大熵模型的学习等价于如下最优化问题 <span class="math display">\[
+\begin{align*}
+\max \ \  &amp;-\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}\\
+s.t. \ \ &amp;\sum_{y}P(y|x)=1\\
+&amp;\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)=\sum_{x,y}\tilde{P}(x,y)f_i(x,y) \ \ i=1,2,3,\cdots m
+\end{align*}
+\]</span></p>
+</blockquote>
+<p>我们可以通过解决对偶问题的方式来进行学习</p>
+<p>我们将上述最大化问题转化为等价的最小化问题，即在所需最大化的函数前加上负号，接着引进拉格朗日乘子<span class="math inline">\(\omega_0,\omega_1,\omega_2,\cdots,\omega_m\)</span>，定义拉格朗日函数<span class="math inline">\(L(P,\omega)\)</span> <span class="math display">\[
+\begin{align*}
+L(P,\omega)&amp;=\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(Y|X)}}+\omega_0\left(1-\sum_{x,y}P(y|x)\right)\\
+&amp;\ \ \ \ +\sum_{i=1}^{n}\omega_i\left(\sum_{x,y}\tilde{P}(x,y)f_i(x,y)-\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)\right) \tag{1}
+\end{align*}
+\]</span> 最优化问题的原始问题是 <span class="math display">\[
+\min_{P\in C} \max_{\omega} L(P,\omega)
+\]</span> 对偶问题是 <span class="math display">\[
+\max_{\omega} \min_{P\in C} L(P,\omega)
+\]</span></p>
+<p>首先求解极小化问题<span class="math inline">\(\min_{P\in C} L(P,\omega)\)</span> <span class="math display">\[
+\begin{align*}
+0=\frac{\partial L(P,\omega)}{\partial P(y|x)}&amp;=\tilde{P}(x)\left(\log{P(y|x)} + P(y|x)\frac{1}{P(y|x)}\right)-\omega_0-\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\\
+\log{P(y|x)}&amp;=\frac{\left(\omega_0+\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\right)}{\tilde{P}(x)}-1\\
+P(y|x)&amp;=\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)}\exp\left(\frac{\omega_0}{\tilde{P}(x)}-1\right)
+\end{align*}
+\]</span></p>
+<p>由于约束<span class="math inline">\(\sum_{y}P(y|x)=1\)</span>，将上式抽象为 <span class="math display">\[
+P(y|x)=\exp{\left(\sum_{i=1}^{n}\omega_i\tilde{P}(x)f_i(x,y)\right)}\frac{1}{Z_{\omega}(x)} \tag{2}
+\]</span> 后带入约束得 <span class="math display">\[
+\begin{align*}
+1&amp;=\sum_{y}\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)}\frac{1}{Z_{\omega}(x)}\\
+Z_{\omega}(x)&amp;=\sum_{y}\exp{\left(\sum_{i=1}^{n}\omega_i f_i(x,y)\right)} \tag{3}
+\end{align*}
+\]</span> 最后将公式(2)、公式(3)带入到公式(1)中，得到所需最大化的函数 <span class="math display">\[
+\begin{align*}
+L(P,\omega)=&amp;\sum_{x,y}^{}{\tilde{P}(x)P(y|x)\log{P(y|x)}}+\omega_0\left(1-\sum_{x,y}P(y|x)\right)\\
+&amp;+\sum_{i=1}^{n}\omega_i\left(\sum_{x,y}\tilde{P}(x,y)f_i(x,y)-\sum_{x,y}\tilde{P}(x)P(y|x)f_i(x,y)\right)
+\end{align*}
+\]</span></p>
+<h1 id="reference">Reference</h1>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3ZfSlVMWV92L2FydGljbGUvZGV0YWlscy80MDUwODQ2NQ==">最大熵模型<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Machine Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Multi-Frame Pose Estimation</title>
+    <url>/2020/07/15/Multi-Frame-Pose-Estimation/</url>
+    <content><![CDATA[<h2 id="iccv-2015-flowing-convnets-for-human-pose-estimation-in-videos">ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos</h2>
+<p><img src="Multi-Frame-Pose-Estimation/image-20200715225905146.png" /></p>
+<p>主要使用光流来提高估计的准确度。首先得到<span class="math inline">\([t-n,t+n]\)</span>帧关节k的热力图，然后计算<span class="math inline">\([t-n,t+n]\)</span>中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记<span class="math inline">\(w_{t+1\rightarrow t}\)</span>为第t+1帧到第t帧的光流，那么<span class="math inline">\(H_{t+1}\)</span>根据光流对齐后的热力图可以表示为 <span class="math display">\[
+\hat{H}_{t+1}(x,y)=H_{t+1}(x-w_x^{t+1\rightarrow t},y-w_y^{t+1\rightarrow t})
+\]</span> 最后经过一个<span class="math inline">\(1*1\)</span>的卷积（也就是通道上的加权平均）得到第t帧关节k的热力图。并且实验从下图的实验结果中可以发现，使用这种pooling的效果更好，而且随着n的增加效果稳步提升。</p>
+<p><img src="Multi-Frame-Pose-Estimation/image-20200715232718905.png" /></p>
+<h2 id="cvpr-2017-thin-slicing-network-a-deep-structured-model-for-pose-estimation-in-videos">CVPR-2017 Thin-Slicing Network: A Deep Structured Model for Pose Estimation in Videos</h2>
+<p>本文把姿势估计分解成两个子问题，分别是Spatial Consistency和Temporal Consistency。对于Spatial Consistency，作者通过以下公式建模： <span class="math display">\[
+S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
+\]</span> 首先我们把关节点按照骨骼连接起来，当作一张图，每个关节点就是一个节点，节点的集合表示为<span class="math inline">\(V\)</span>，每根骨骼就是一条边，边的集合表示为<span class="math inline">\(E_s\)</span>（这里的下标s表示Spatial），<span class="math inline">\(p_i\)</span>表示关节点<span class="math inline">\(i\)</span>，那么关节点估计可以转化为最小化上式。</p>
+<p><span class="math inline">\(\phi_i(p_i|I)\)</span>用来表示给定输入图片<span class="math inline">\(I\)</span>，<span class="math inline">\(p_i\)</span>是第<span class="math inline">\(i\)</span>个关节点位置的概率（ <code>confidence values of part i based on the local appearance</code>），这里的<span class="math inline">\(\phi_i\)</span>用卷积神经网络来估计；<span class="math inline">\(\psi_{i,j}(p_i,p_j)\)</span>表示的是关节点<span class="math inline">\(i\)</span>和关节点<span class="math inline">\(j\)</span>的匹配程度，这里利用<code>spring energy model</code>建模，可表示为 <span class="math display">\[
+\begin{align*}
+\psi_{i,j}(p_i,p_j)&amp;=w_{i,j}\cdot d(p_i-p_j)\\
+&amp;=w_{i,j}\cdot [\Delta x\ \Delta x^2\ \Delta y\ \Delta y^2]^T
+\end{align*}
+\]</span> 其中<span class="math inline">\(w_{i,j}\)</span>是可学习参数。</p>
+<p>对于Temporal Consistency，作者以光流为切入点，公式如下 <span class="math display">\[
+\begin{align*}
+&amp;\sum_{(i,i^*)\in E_t}{\psi_{i,i^*}(p_i,p&#39;_{i^*})}\\
+=&amp;\sum_{(i,i^*)\in E_t}{\psi_{i,i^*}(p_i,(p_{i^*}+f_{i^*,i}(p_{i^*})))}\\
+\end{align*}
+\]</span> <span class="math inline">\(\psi\)</span>和之前的一样，只是这个<span class="math inline">\(i^\star\)</span>复杂了一点。这里的<span class="math inline">\(E_t\)</span>是把相邻帧之间同一个关节点连接起来的边的结合，也就是下图中的橙色线。<span class="math inline">\(f_{i^\star,i}(x)\)</span>表示的是按照<span class="math inline">\(i^\star\)</span>所在帧到<span class="math inline">\(i\)</span>所在帧的光流移动点<span class="math inline">\(x\)</span>，其实就是下图中左侧<code>flow warp</code>。举个例子，先估计出<span class="math inline">\(t-1\)</span>帧的关节点，然后按照<span class="math inline">\(t-1\)</span>帧到<span class="math inline">\(t\)</span>帧的光流，把每个关节点按照光流做<code>propagate</code>，propagate之后的关节点就是<span class="math inline">\(i^\star\)</span>。</p>
+<p>从不同帧使用Temporal Information估计同一帧的关节点，如果大家估计的差不多，那么说明有很好的一致性，关节点的连续性得到了保证。</p>
+<p><img src="Multi-Frame-Pose-Estimation/image-20200716090204471.png" /></p>
+<p>最终的目的就是最大化上述两个式子，就能实现时空一致性。</p>
+<h2 id="cvpr-2018-detect-and-track-efficient-pose-estimation-in-videos">CVPR-2018 Detect-and-Track: Efficient Pose Estimation in Videos</h2>
+<p>网络结构如下图所示。其实这个做法非常非常的简单，就是一个多任务学习，收到<code>I3D</code>的启发，把<code>Mask RCNN</code>改成了3D卷积的形式，原来的<code>RPN</code>（<code>Region Proposal Network</code>）改成了<code>TPN</code>（<code>Tube Proposal Network</code>）。这个Tube很好理解，原来RPN是在图上找一个矩形区域，那如果一个视频的话，连续T帧都在同一个位置划定一个矩形，连接起来不就是个Tube了。并且<code>Mask RCNN</code>本来就有一个head是用来做关键点检测的，嗯，所以他主要就是把2D卷积换成了3D卷积。这里的Spatio-Temporal RoIAlign其实就是对每帧上的RoI做RoIAlign，然后再按顺序拼接起来。</p>
+<p><img src="Multi-Frame-Pose-Estimation/image-20200716093209065.png" /></p>
+<h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
+<p>套个LSTM就完事了，Temporal Information让他自己去学吧。</p>
+]]></content>
+      <categories>
+        <category>Pose Estimation</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Pose Estimation 指标</title>
+    <url>/2021/03/01/Pose-Estimation-Metrics/</url>
+    <content><![CDATA[<p>关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。</p>
+<h3 id="oks-object-keypoint-similarity">OKS (Object Keypoint Similarity)</h3>
+<p><span class="math display">\[
+OKS_p = \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}=1)}{\sum_i\delta(v_{pi}=1)}
+\]</span></p>
+<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
+<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
+<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
+<p><span class="math inline">\(S_p\)</span> 表示尺度缩放因子，<span class="math inline">\(S_p=\sqrt{(x_2-x_1)(y_2-y_1)}\)</span></p>
+<p><span class="math inline">\(\sigma_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的归一化因子，对数据集中所有groundtruth计算的标准差而得到的，反映出当前骨骼点标注时候的标准差， <span class="math inline">\(\sigma_i\)</span>越大则越难标注</p>
+<p><span class="math inline">\(v_{pi}\)</span>表示关节点是否可见</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_oks</span>(<span class="params">dts, gts</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(dts) * <span class="built_in">len</span>(gts) == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> np.array([])</span><br><span class="line">    oks_mat = np.zeros((<span class="built_in">len</span>(dts), <span class="built_in">len</span>(gts)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute oks between each detection and ground truth object</span></span><br><span class="line">    <span class="keyword">for</span> j, gt <span class="keyword">in</span> <span class="built_in">enumerate</span>(gts):</span><br><span class="line">        <span class="comment"># create bounds for ignore regions(double the gt bbox)</span></span><br><span class="line">        g = np.array(gt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">        xg = g[<span class="number">0</span>::<span class="number">3</span>]; yg = g[<span class="number">1</span>::<span class="number">3</span>]; vg = g[<span class="number">2</span>::<span class="number">3</span>]</span><br><span class="line">        k1 = np.count_nonzero(vg &gt; <span class="number">0</span>)</span><br><span class="line">        bb = gt[<span class="string">&#x27;bbox&#x27;</span>]</span><br><span class="line">        x0 = bb[<span class="number">0</span>] - bb[<span class="number">2</span>]; x1 = bb[<span class="number">0</span>] + bb[<span class="number">2</span>] * <span class="number">2</span></span><br><span class="line">        y0 = bb[<span class="number">1</span>] - bb[<span class="number">3</span>]; y1 = bb[<span class="number">1</span>] + bb[<span class="number">3</span>] * <span class="number">2</span></span><br><span class="line">        <span class="keyword">for</span> i, dt <span class="keyword">in</span> <span class="built_in">enumerate</span>(dts):</span><br><span class="line">            d = np.array(dt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">            xd = d[<span class="number">0</span>::<span class="number">3</span>]; yd = d[<span class="number">1</span>::<span class="number">3</span>]</span><br><span class="line">            <span class="keyword">if</span> k1&gt;<span class="number">0</span>:</span><br><span class="line">                <span class="comment"># measure the per-keypoint distance if keypoints visible</span></span><br><span class="line">                dx = xd - xg</span><br><span class="line">                dy = yd - yg</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># measure minimum distance to keypoints in (x0,y0) &amp; (x1,y1)</span></span><br><span class="line">                z = np.zeros((<span class="built_in">len</span>(sigmas)))</span><br><span class="line">                dx = np.<span class="built_in">max</span>((z, x0-xd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, xd-x1),axis=<span class="number">0</span>)</span><br><span class="line">                dy = np.<span class="built_in">max</span>((z, y0-yd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, yd-y1),axis=<span class="number">0</span>)</span><br><span class="line">            e = (dx**<span class="number">2</span> + dy**<span class="number">2</span>) / variances / (gt[<span class="string">&#x27;area&#x27;</span>]+np.spacing(<span class="number">1</span>)) / <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> k1 &gt; <span class="number">0</span>:</span><br><span class="line">                e=e[vg &gt; <span class="number">0</span>]</span><br><span class="line">            oks_mat[i, j] = np.<span class="built_in">sum</span>(np.exp(-e)) / e.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> oks_mat</span><br></pre></td></tr></table></figure>
+<h4 id="oks-矩阵">OKS 矩阵</h4>
+<p>对于多人姿态估计，若gt中M个人，预测了N个人，计算两两之间的OKS构成<span class="math inline">\(M\times N\)</span>矩阵，最后选择每个gt的人中最大的OKS值作为结果。</p>
+<h3 id="pck-percentage-of-correct-keypoints">PCK (Percentage of Correct Keypoints)</h3>
+<p><span class="math display">\[
+PCK_p^i=\frac{\sum_p\delta(\frac{d_{pi}}{d_{p}^{def}}\le T_i)}{\sum_p1}
+\]</span></p>
+<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
+<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
+<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
+<p><span class="math inline">\(d_{p}^{def}\)</span> 表示尺度缩放因子，对于FLIC使用的是躯干直径（左肩到左臀或右肩到左臀），对于MPII用的是头部对角线的长度（<strong>PCKh</strong>）</p>
+<p><span class="math inline">\(T_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的阈值</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_pck_pckh</span>(<span class="params">dt_kpts,gt_kpts,refer_kpts</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    pck指标计算</span></span><br><span class="line"><span class="string">    :param dt_kpts:算法检测输出的估计结果,shape=[n,h,w]=[行人数，２，关键点个数]</span></span><br><span class="line"><span class="string">    :param gt_kpts: groundtruth人工标记结果,shape=[n,h,w]</span></span><br><span class="line"><span class="string">    :param refer_kpts: 尺度因子，用于预测点与groundtruth的欧式距离的scale。</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pck指标：躯干直径，左肩点－右臀点的欧式距离；</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pckh指标：头部长度，头部rect的对角线欧式距离；</span></span><br><span class="line"><span class="string">    :return: 相关指标</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    dt=np.array(dt_kpts)</span><br><span class="line">    gt=np.array(gt_kpts)</span><br><span class="line">    <span class="keyword">assert</span>(<span class="built_in">len</span>(refer_kpts)==<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">assert</span>(dt.shape[<span class="number">0</span>]==gt.shape[<span class="number">0</span>])</span><br><span class="line">    ranges=np.arange(<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.01</span>)</span><br><span class="line">    kpts_num=gt.shape[<span class="number">2</span>]</span><br><span class="line">    ped_num=gt.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">#compute dist</span></span><br><span class="line">    scale=np.sqrt(np.<span class="built_in">sum</span>(np.square(gt[:,:,refer_kpts[<span class="number">0</span>]]-gt[:,:,refer_kpts[<span class="number">1</span>]]),<span class="number">1</span>))</span><br><span class="line">    dist=np.sqrt(np.<span class="built_in">sum</span>(np.square(dt-gt),<span class="number">1</span>))/np.tile(scale,(gt.shape[<span class="number">2</span>],<span class="number">1</span>)).T</span><br><span class="line">    <span class="comment">#compute pck</span></span><br><span class="line">    pck = np.zeros([ranges.shape[<span class="number">0</span>], gt.shape[<span class="number">2</span>]+<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">for</span> idh,trh <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">list</span>(ranges)):</span><br><span class="line">        <span class="keyword">for</span> kpt_idx <span class="keyword">in</span> <span class="built_in">range</span>(kpts_num):</span><br><span class="line">            pck[idh,kpt_idx] = <span class="number">100</span>*np.mean(dist[:,kpt_idx] &lt;= trh)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># compute average pck</span></span><br><span class="line">        pck[idh,-<span class="number">1</span>] = <span class="number">100</span>*np.mean(dist &lt;= trh)</span><br><span class="line">    <span class="keyword">return</span> pck</span><br></pre></td></tr></table></figure>
+<p>PCK现在用的不多，主要用的是OKS</p>
+<h3 id="apaverage-precision-araverage-recall">AP（Average Precision）&amp; AR（Average Recall）</h3>
+<p>AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。 <span class="math display">\[
+P=\frac{TP}{TP+FP}
+\]</span> <span class="math display">\[
+R=\frac{TP}{TP+FN}
+\]</span></p>
+<p>关于COCO上各个<span class="exturl" data-url="aHR0cHM6Ly9jb2NvZGF0YXNldC5vcmcvI2tleXBvaW50cy1ldmFs">指标<i class="fa fa-external-link-alt"></i></span>的具体定义可以参考下图</p>
+<p><img src="Pose-Estimation-Metrics/image-20210325204226067.png" /></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pYRl8xOTkxL2FydGljbGUvZGV0YWlscy8xMDQyNzkzODc=">人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客<i class="fa fa-external-link-alt"></i></span></p>
+]]></content>
+      <categories>
+        <category>Pose Estimation</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Pose-Estimation 论文</title>
+    <url>/2020/07/15/Pose-Estimation/</url>
+    <content><![CDATA[<h2 id="cvpr-2020-unipose-unified-human-pose-estimation-in-single-images-and-videos">CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos</h2>
+<h3 id="wasp">WASP</h3>
+<p>WASP的结构如下图所示（实际上该作者还写过一篇论文<code>Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation</code>，单独写了这个WASP结构，用在语义分割上，这又写了一篇用在姿态识别，水论文么）</p>
+<p><img src="Pose-Estimation/WASP.png" /></p>
+<p>作者说是借鉴ASPP、Cascade和Res2Net。</p>
+<p>简单来说，ASPP就是，对于同一个input，用不同dilation的卷积去运算，这样做的好处是在不改变计算量的前提下增大感受野，能够更好的捕捉不同尺度目标的信息。很显然，WASP里面那一行蓝色的就是借用了ASPP里的这一设计思路。</p>
+<p><img src="Pose-Estimation/ASPP.png" /></p>
+<p>Res2Net，多尺度特征融合的一个新方法，而且是从一个更细的粒度上去进行多尺度特征融合。常见的方法例如FPN都是从层这个粒度上去融合多尺度特征的，但是Res2Net是从卷积运算的层面上去进行多尺度特征偶然那个和。需要注意的是，这里是把特征按通道来分成<span class="math inline">\(s\)</span>等份（下图中<span class="math inline">\(s=4\)</span>），然后每一组按照下述方法进行运算，例如<span class="math inline">\(X_2\)</span>仅过<span class="math inline">\(3\times3\)</span>卷积之后得到<span class="math inline">\(K_2\)</span>，<span class="math inline">\(K_2\)</span>和<span class="math inline">\(X_3\)</span>加起来继续<span class="math inline">\(3\times3\)</span>卷积，以此类推。可以看到对于不同组的特征，他们仅过卷积的次数是不一样的，那么感受野也就不一样，所以是不同尺度的特征融合。</p>
+<p><img src="Pose-Estimation/Res2Net.jpg" /></p>
+<p>个人理解Cascade和Res2Net指的都是WASP中每个卷积之间的横向箭头。</p>
+<p><img src="Pose-Estimation/Unipose-Overview.png" /></p>
+<p>UniPose的整体架构如上图所示。输入一张图片，经过ResNet-101提取特征，然后再进过一个WASP模块提取不同尺度的特征，再进过Decoder将特征转化为热图。</p>
+<p><img src="Pose-Estimation/Unipose-Decoder.png" /></p>
+<p>其中的Decoder模块，结构也很简单，就是多个卷积层和Dropout的堆叠，最后用双线性插值上采样到输入大小。这里需要注意Decoder的输入，不仅仅是WASP的输出，还有来自ResNet-101的底层特征，特征融合的过程也比较常规。</p>
+<h3 id="unipose-lstm">UniPose-LSTM</h3>
+<p><img src="Pose-Estimation/Unipose-LSTM.png" /></p>
+<p>为了利用视频中的时序信息，作者有提出了UniPose-LSTM。其实也没什么特别的，就是用LSTM连起来。前一帧的heatmap和当前帧的heatmap作为LSTM的输入，经过几次卷积后得到最终的heatmap。但是作者这里没有明确前一帧和当前帧的heatmap是怎么结合在一起的，考虑到作者说参考的是<code>LSTM Pose Machine</code>，而<code>LSTM Pose Machine</code>里就是直接将两帧的特征concat，大胆猜测这里也是将前一帧和当前帧的heatmap做concat。</p>
+<h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
+<p>使用LSTM提取视频中的时序信息，改善视频中关节点预测的连续性，算是用到RNN较早的一篇论文了。模型结构如下图所示，对于第一帧图像，用较浅的ConvNet1得到一个热力图当作上一帧的输出，然后和当前帧通过ConvNet2得到的热力图加起来，再加上一个额外的Central Gaussian Map（CPM里用这个来提高准确率），合在一起作为LSTM的输入，然后LSTM的输出经过ConvNet3解码得到热力图。</p>
+<p><img src="Pose-Estimation/LSTM-Pose-Overview.png" /></p>
+<p>ConvNet1、ConvNet2、ConvNet3和CPM中各个模型相同，LSTM用的是Conv-LSTM。主要的不同点在于把矩阵乘法换成了卷积。下面的公式里，<span class="math inline">\(*\)</span>本来是矩阵乘法，在Conv-LSTM中是卷积（一般是<span class="math inline">\(3\times3\)</span>卷积），目的是关注局部信息，全局信息可以用LSTM提取。 <span class="math display">\[
+\begin{align*}
+g_t &amp;= \tanh{(W_{xg}*X_t + W_{hg}*h_{t-1} + b_g)} \\
+i_t &amp;= \sigma{(W_{xi}*X_t + W_{hi}*h_{t-1} + b_i)} \\
+f_t &amp;= \sigma{(W_{xf}*X_t + W_{hf}*h_{t-1} + b_f)} \\
+o_t &amp;= \sigma{(W_{xo}*X_t + W_{ho}*h_{t-1} + b_o)} \\
+C_t &amp;= f_t \odot C_{t-1} + i_t \odot g_t \\
+h_t &amp;= o_t \odot \tanh{(C_t)}
+\end{align*}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>Pose Estimation</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>SIFT</title>
+    <url>/2018/11/20/SIFT/</url>
+    <content><![CDATA[<h1 id="what-is-siftscale-invariant-feature-transform">What is SIFT(Scale-invariant Feature Transform)</h1>
+<p>SIFT，它既是一个 Detector，又是一个 Descriptor。SIFT具有尺度不变性、旋转不变性、光照不变性和视角不变性。那么我们为什么需要这些性质呢？</p>
+<p>显然，这些性质是有实际需求的。以尺度不变性为例，当我们在使用 <code>Harris</code> 算子做角点检测时，我们所划定的区域大小直接决定了我们是否能提取到我们所需要的角点。如下图所示，当我们选择的区域大小不同时（图中表示为方块的面积大小），我们所得到的检测结果显然是不同的。当选择图片左侧所示方块大小时，我们看到的是一个角，而如果选择右侧所示方块大小时，我们所检测到的则是边界。可以想象，如果把左侧区域继续放大，那我们最终检测到的将是一个平面。</p>
+<img src="/2018/11/20/SIFT/scale.png" class="" title="Credit:Kristen Grauman">
+<p>由此，我们希望能够有一个算法，它能够帮助我们准确地识别出来到底是 edge 还是 corner 亦或者是 flat。</p>
+<h1 id="sift-算法步骤">SIFT 算法步骤</h1>
+<h2 id="构建尺度空间">1. 构建尺度空间</h2>
+<p>可以说这个SIFT里面最简单的一步了。Scale Space，尺度空间，实际上是指使用不同参数 <span class="math inline">\(\sigma\)</span> 的高斯核对同一张图片做卷积运算后得到的图片序列。使用高斯核做卷积运算也可称为对图像进行高斯模糊。经过高斯模糊之后的图像可表示为：</p>
+<p><span class="math display">\[
+L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
+\]</span></p>
+<p>其中高斯核为： <span class="math display">\[
+G(x,y,\sigma)=\frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+\]</span></p>
+<p>为了得到尺度空间，我们选用不同的<span class="math inline">\(\sigma\)</span>来得到一组图片，这一组图片中依次是使用原图像和参数分别为<span class="math inline">\((\sigma, k\sigma, k^2\sigma, k^3\sigma, \cdots)\)</span>进行高斯模糊，我们可以使用<span class="math inline">\(k = \sqrt{2}\)</span>作为倍数。这一组图片我们称为一个 <code>Octave</code>，每个 <code>Octave</code>中有多张图片。我们需要构建多个<code>Octave</code>，每个<code>Octave</code>中图像的大小都是前一组的一半。</p>
+<img src="/2018/11/20/SIFT/sift-octaves.png" class="" title="Credit:aishack.in">
+<h2 id="dogdifference-of-gaussian与-loglaplacian-of-gaussian">2. DoG（Difference of Gaussian）与 LoG（Laplacian of Gaussian）</h2>
+<p>首先我们来看下什么是<code>LoG</code>。<code>LoG</code>就是对高斯核计算二阶导。</p>
+<p><span class="math display">\[
+\begin{align*}
+\alpha&amp;=\frac{1}{\sqrt{2\pi\sigma^2}}\\
+\frac{\partial^2}{\partial^2x}G_{\sigma}(x,y)&amp;=\alpha\frac{x^2-\sigma^2}{\sigma^4}e^{-\frac{x^2+y^2}{2\sigma^2}}\\
+\frac{\partial^2}{\partial^2y}G_{\sigma}(x,y)&amp;=\alpha\frac{y^2-\sigma^2}{\sigma^4}e^{-\frac{x^2+y^2}{2\sigma^2}}\\
+LoG&amp;=\frac{\partial^2}{\partial^2x}G_{\sigma}(x,y)+\frac{\partial^2}{\partial^2y}G_{\sigma}(x,y)\\
+&amp;=\alpha\frac{x^2 + y^2-\sigma^2}{\sigma^4}e^{-\frac{x^2+y^2}{2\sigma^2}}
+\end{align*}
+\]</span></p>
+<p>虽然LoG可以很好的完成边缘检测的任务，但是他最大的缺点就是计算复杂度非常的高。这就需要寻找一种近似方法来提高效率。而这个方法就是<code>DoG</code>。</p>
+<p>假设我们现在有两张使用不同参数<span class="math inline">\(\sigma\)</span>做高斯模糊后的图像，即 <span class="math display">\[
+g_1(x,y) = G(x,y,\sigma_1) I(x,y)\\
+g_2(x,y) = G(x,y,\sigma_2) I(x,y)\\
+\]</span> 将两幅图像相减之后即得到<code>DOG</code>得到 <span class="math display">\[
+\begin{align*}
+DoG=
+g_1(x,y)-g_2(x,y)
+&amp;= G(x,y,\sigma_1)*I(x,y) - G(x,y,\sigma_2)*I(x,y)\\
+&amp;= \left(G(x,y,\sigma_1) - G(x,y,\sigma_2)\right)*I(x,y)
+\end{align*}
+\]</span> 这时的<code>DoG</code>已经具有了尺度不变性。</p>
+<h2 id="寻找关键点">3. 寻找关键点</h2>
+<p>要找到关键点，我们只需要找出一个空间最大值即可。</p>
+<img src="/2018/11/20/SIFT/select_max.png" class="" title="Credit:Standford CS131">
+<p>在一个octave中，我们选择一张图片A，图片A前一张图片为B，后一张图片为C，我们选择A中的一个像素，比较A周围8个像素，B中A对应位置以及其周围8个像素，C中A对应位置以及其周围的8个像素，总计<code>8+9+9=26</code>个像素（上图中X即为所选像素，绿色点代表上述26个像素），如果我们所选的像素是这其中最大或者最小的，那么这个点就是 <code>Interest Point or Keypoint</code>。</p>
+<p>然而，仅仅找到这些关键点是不够的，我们还需要对他们进行筛选。筛选的原则就是我们希望最后得到的关键点是能让<code>DoG</code>最大化的点。这里就需要用到对离散函数的泰勒展开式。</p>
+<p>对一个多元函数，其泰勒展开式可表示为 <span class="math display">\[
+D(x) = D+\frac{\partial D^T}{\partial x}\Delta x+\frac{1}{2}\Delta x^T\frac{\partial^2 D^T}{\partial x^2}\Delta x
+\]</span> 为求极值点，令上式导数为0，得到 <span class="math display">\[
+\Delta x=-\frac{\partial D^{-1}}{\partial x^2}\frac{\partial D}{\partial x}
+\]</span> 代入后得到 <span class="math display">\[
+D(\hat{x})=D+\frac{1}{2}\frac{\partial D^T}{\partial x}\hat{x}
+\]</span> 对于筛选过程，一共分为2步</p>
+<ol type="1">
+<li>如果<span class="math inline">\(D(\hat{x}) &lt; 0.03\)</span>，则剔除这个点</li>
+<li>检测关键点DoG函数的曲率？</li>
+</ol>
+<h2 id="寻找主方向">4. 寻找主方向</h2>
+<p>目前，我们已经得到了关键点的坐标<span class="math inline">\((x,y)\)</span>以及所对应的尺度<span class="math inline">\(\sigma\)</span>，那么我们可以根据这些信息，选择尺度最接近<span class="math inline">\(\sigma\)</span>的高斯模糊后的图像，计算<span class="math inline">\(2*3*\sigma\)</span>邻域中像素点的HoG，邻域中的每个点的权重根据高斯核给出。得到HoG之后，峰值所对应的<span class="math inline">\(\theta\)</span>作为主方向。如果存在另一个方向<span class="math inline">\(\theta^{\prime}\)</span>，其对应的直方图高度为主方向对应高度的80%，那么就选为辅方向（有时还要求这个辅方向是局部最大值，即比他相邻的两个方向所对应高度更高）。</p>
+<p>由此，我们得到了关键点的一个描述，即<span class="math inline">\((x,y,\sigma,\theta)\)</span>。一个关键点只能有一个主方向，辅方向可以有多个，使用时我们仅仅简单的复制这些点的描述。例如<span class="math inline">\((x,y,\sigma,\theta), (x,y,\sigma,\theta_1), (x,y,\sigma,\theta_2) \cdots\)</span>。</p>
+<h2 id="生成特征描述">5. 生成特征描述</h2>
+<p>对关键点附近的<span class="math inline">\(16*16\)</span>的邻域，切分成16个<span class="math inline">\(4*4\)</span>的小方格，对每个小方格做HoG，并使用基于关键点距离的高斯权重函数对每个点的权重做出调整。最后将16个8维特征组合起来，形成<code>SIFT Descriptor</code></p>
+<h1 id="reference">Reference</h1>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cDovL2ZvdXJpZXIuZW5nLmhtYy5lZHUvZTE2MS9sZWN0dXJlcy9ncmFkaWVudC9ub2RlOC5odG1s">Laplacian of Gaussian<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cDovL2ZvdXJpZXIuZW5nLmhtYy5lZHUvZTE2MS9sZWN0dXJlcy9ncmFkaWVudC9ub2RlOS5odG1s">Difference of Gaussian<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vcGFrZmFob21lL3AvMzU5ODk4My5odG1s">离散函数的泰勒展开<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Computer Vision</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>SVM 梯度</title>
+    <url>/2020/02/11/SVM-gradient/</url>
+    <content><![CDATA[<h1 id="svm-损失函数的梯度">SVM 损失函数的梯度</h1>
+<p>训练样本<span class="math inline">\(X=[x_1,x_1,\cdots,x_N]^T\)</span>，<span class="math inline">\(x_i\in\mathbb{R}^{D}\)</span>，样本的类别为<span class="math inline">\(Y=[y_1,y_2,\cdots,y_n]\)</span>。需要训练的参数<span class="math inline">\(W=[w_1,w_2,\cdots,w_c]\)</span>，<span class="math inline">\(w_i\in\mathbb{R}^{D}\)</span>。对每个样本<span class="math inline">\(x_i\)</span>，SVM 的损失函数<code>Hinge Loss</code>计算方式如下：</p>
+<p><span class="math display">\[
+\begin{align*}
+g_{ic} &amp; = x_iw_c-x_iw_{y_i}+1 \\
+L_{x_i} &amp; =\sum_{c\ne y_i}\max(0,g_{ic}) \\
+\end{align*}
+\]</span></p>
+<p>若使用梯度下降法来更新参数，就需要求出<span class="math inline">\(\mathrm{d}W = \nabla_wL_{x_i}\)</span>，并通过迭代式<span class="math inline">\(w^{t+1}=w^t+\alpha\cdot\mathrm{d}W\)</span>来更新参数。</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \frac{\partial L_{x_i}}{\partial w_{11}} &amp; \frac{\partial L_{x_i}}{\partial w_{12}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{1C}} \\
+   \vdots &amp; \vdots &amp;   &amp;  \vdots  \\
+   \frac{\partial L_{x_i}}{\partial w_{D1}} &amp; \frac{\partial L_{x_i}}{\partial w_{D2}} &amp; \cdots &amp; \frac{\partial L_{x_i}}{\partial w_{DC}} \\
+\end{bmatrix}
+\]</span></p>
+<p>显然，只需要算出其中每一个<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{dc}}\)</span>就可以得到梯度。先从简单地开始看，首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{11}}\)</span>。<span class="math inline">\(w_{11}\)</span>只会出现在<span class="math inline">\(x_iw_1\)</span>中，并且根据内积的运算法则，我们可以很容易得到</p>
+<p><span class="math display">\[
+x_iw_1=\begin{bmatrix}
+   x_{i1} &amp; x_{i2} &amp; \cdots &amp; x_{id}
+\end{bmatrix}
+\begin{bmatrix}
+   w_{11} \\
+   w_{21} \\
+   \vdots \\
+   w_{d1}
+\end{bmatrix}=\sum_k{x_{ik}\cdot w_{k1}}
+\]</span></p>
+<p>所以有</p>
+<p><span class="math display">\[
+\frac{\partial g_{11}}{\partial w_{11}}=x_{i1}
+\]</span></p>
+<p>根据链式法则，有</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{11}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial \max(0,g_{11})}\frac{\partial \max(0,g_{11})}{\partial  g_{11}}\frac{\partial  g_{11}}{\partial w_{11}} \\
+\\
+&amp;=\unicode{x1D7D9} \left((x_iw_1-x_iw_{y_i}+1)&gt;0\right)x_{i1}
+\end{align*}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{1}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{1}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{2c}}(c\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{2}\color{green}{c}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{c}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{2}}
+\]</span></p>
+<p>再计算<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{d1}}(1\ne y_i)\)</span>，易知</p>
+<p><span class="math display">\[
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{1}}}=\unicode{x1D7D9} \left((x_iw_\color{green}{1}-x_iw_{y_i}+1)&gt;0\right)x_{i\color{red}{d}}
+\]</span></p>
+<p>依此类推，可得</p>
+<p><span class="math display">\[
+\nabla_WL_{x_i}=
+\begin{bmatrix}
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{i1} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{i1} \\
+   \vdots &amp; &amp;  \vdots  \\
+   \unicode{x1D7D9} \left((x_iw_1-xw_{y_i}+1)&gt;0\right)x_{id} &amp; \cdots &amp; \unicode{x1D7D9} \left((x_iw_c-xw_{y_i}+1)&gt;0\right)x_{id} \\
+\end{bmatrix}
+\]</span></p>
+<p>下面讨论<span class="math inline">\(c=y_i\)</span>的情况。首先计算一下<span class="math inline">\(\frac{\partial L_{x_i}}{\partial w_{1y_i}}\)</span>，</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{1y_i}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{1y_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_{y_i}+1)&gt;0\right)\cdot(-x_{i1})
+\end{align*}
+\]</span></p>
+<p>显然</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial L_{x_i}}{\partial w_{\color{red}{d}\color{green}{y_i}}}&amp;=\frac{\partial L_{x_i}}{\partial \sum}\frac{\partial \sum}{\partial w_{dy_i}} \\
+\\
+&amp;=\sum_{c\ne y_i}\unicode{x1D7D9} \left((x_iw_c-x_iw_\color{green}{y_i}+1)&gt;0\right)\cdot(-x_{i\color{red}{d}})
+\end{align*}
+\]</span></p>
+<p>对于所有样本<span class="math inline">\(X\)</span>的损失函数可表示为</p>
+<p><span class="math display">\[
+L=\frac{1}{N}\sum_{i}^N{L_{x_i}}=\frac{1}{N}\sum_{i}^N{\sum_{c\ne y_i}\max(0,g_{ic})}
+\]</span></p>
+<p>所以</p>
+<p><span class="math display">\[
+\mathrm{d}W=\sum_i^N{\nabla_WL_{x_i}}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>cs231n</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Self-Supervised</title>
+    <url>/2020/07/21/Self-supervised/</url>
+    <content><![CDATA[<h2 id="cvpr-2020-selflow-self-supervised-learning-of-optical-flow">CVPR 2020 SelFlow: Self-Supervised Learning of Optical Flow</h2>
+<h3 id="unsupervised-optical-flow-estimation">Unsupervised Optical Flow Estimation</h3>
+<p>基于亮度一致性<code>brightness constancy</code>和空间平滑性<code>spatial smoothness</code>，由此产生了<code>photometric loss</code>，但是这个损失函数并不能处理有遮挡的情况，所以后来的学者提出先估计出一个<code>occlusion map</code>，然后计算损失的时候不去考虑这些被遮挡的点。</p>
+<h3 id="self-supervised-method">Self-supervised Method</h3>
+<p>思考一下，自监督怎么才能监督起来呢？已经提出了很多的<code>pretext task</code>，比如说<code>inpaint</code>（从图片中去掉一块，然后去填充）、给图片上色、或者是拼图任务。其实自监督的关键就是要从<code>pretext task</code>中学到一些特殊的信息，比如拼图任务，就是希望能学习出图片的空间位置关系。</p>
+<h3 id="method">Method</h3>
+<p>使用两个结构一样的CNN网络，<code>NOC-Model</code>重点学习没有被遮挡的像素点的光流，<code>OCC-Model</code>学习所有像素点（包括被遮挡和不被遮挡的像素点）的光流，测试的时候只需要<code>OCC-Model</code>就可以了。</p>
+<p>给定连续三帧<span class="math inline">\(I_{t-1}\)</span>、<span class="math inline">\(I_t\)</span>和<span class="math inline">\(I_{t+1}\)</span>，我们用<span class="math inline">\(w_{i\rightarrow j}\)</span>表示<span class="math inline">\(I_{i}\)</span>到<span class="math inline">\(I_j\)</span>的光流，那么我们可以估计<span class="math inline">\(w_{t\rightarrow t-1}\)</span>和<span class="math inline">\(w_{t\rightarrow t+1}\)</span>，然后用估计出来的两个光流把<span class="math inline">\(I_t\)</span>转化为<span class="math inline">\(I_{t-1}\)</span>和<span class="math inline">\(I_t\)</span>，这时候就可以做自监督了。另外，为什么要估计两个光流呢，只顾及一个光流其实也够啊？作者把<span class="math inline">\(w_{t\rightarrow t+1}\)</span>作为forward，把<span class="math inline">\(w_{t\rightarrow t-1}\)</span>作为backward，相当于在网络的一次前向传播就完成了forward和backward两次光流估计，是个有新意的地方。</p>
+]]></content>
+      <categories>
+        <category>Self-supervised</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Ubuntu 20.04 中文输入法</title>
+    <url>/2020/07/20/Ubuntu-20-04-Chinese-IME/</url>
+    <content><![CDATA[<p>搜狗输入法在 Ubuntu 20.04 上没法用了（因为依赖了Qt4？），试了试Google拼音输入法，一言难尽，没有词库，打个字是真的累，想了想，还是再去找找其他输入法吧。</p>
+<p>这时候百度输入法出现了，虽然没有说支持20.04，但看网上很多人说都可以用，就下下来试一试。</p>
+<p>下载的zip包里还很贴心地配上了安装说明，可是看到说要装一大堆东西<code>fcitx-bin fcitx-table fcitx-config-gtk fcitx-config-gtk2 fcitx-frontend-all qt5-default qtcreator qml-module-qtquick-controls2</code>，这也太多了吧？？？还要装<code>qtcreator</code>？我不信要那么多。电脑上已经有fcitx了，直接安装不就好了，安装过程很顺利，但是吧，输入的前五个字母都是对的，超过5个字母，下面的候选字就变成了乱码:)</p>
+<p>一顿操作，找到了<code>/opt/apps/com.baidu.fcitx-baidupinyin/files/bin/bd-qimpanel.watchdog.sh</code>，显然是个守护程序，打开发现守护的是同目录下的<code>baidu-qimpanel</code>。合理，来运行看看，报错:)，找不到<code>libQt5QuickWidgets.so.5</code> 行，我给你装上，<code>sudo apt install libqt5quickwidgets5</code>，装完之后可以运行了，界面还挺漂亮的，我们再试试输入法，卧槽？行了？可以，看来是缺少运行库的问题。</p>
+<p>综上，如果安装完百度输入法乱码，其他常规fictx乱码的解决方法无效，那试试运行<code>/opt/apps/com.baidu.fcitx-baidupinyin/files/bin/baidu-qimpanel</code>，看看是不是缺少了依赖，缺什么装什么。</p>
+]]></content>
+      <categories>
+        <category>Ubuntu</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Weakly-supervised Action Localization</title>
+    <url>/2020/07/27/Weakly-supervised-Action-Localization/</url>
+    <content><![CDATA[<p>Action Localization 任务是对Action Recognition任务的提高版，不仅仅需要识别出视频中的是什么动作，还需要知道这个动作起始帧和终止帧的具体位置。如果是Action Recognition是图片分类的话，那么Action Localization就是目标检测，不仅仅要知道bounding box里面的是什么，还要知道这个bounding box应该画在哪里。</p>
+<p>这里的弱监督指的是只标注了视频中包含什么行为（一个视频中可能包含<strong>多个</strong>行为），但是没有标注这个行为的起始帧和终止帧。也就是说，模型需要根据video-level的标注，回归得到每个行为具体发生的起止时间，相对来说这个任务更加困难。</p>
+<h2 id="aaai-2020-background-suppression-network-for-weakly-supervised-temporal-action-localization">AAAI-2020 Background Suppression Network for Weakly-supervised Temporal Action Localization</h2>
+<h3 id="weakly-supervised">Weakly-supervised</h3>
+<p>有学者将<code>Weakly-supervised Action Localization</code>问题化归为<code>Multiple Instance Learning</code>。<code>MIL</code>，简单来说，就是一个集合中有多个实例，如果<strong>每个</strong>实例都是<strong>负样本</strong>，那么这个集合就是<strong>负样本</strong>；如果这个集合中<strong>至少有一个正样本</strong>，那么这个集合就是<strong>正样本</strong>，我们的任务是去预测每个集合的类别。因为视频是由一帧帧图像组成的，那么action localization就可以理解为是我找到一个视频片段，如果这个片段中至少有一帧包含我所关注的行为，那么我就认为这个片段是一个正样本（就所关注的行为而言），否则就是负样本，至于这个片段是否tight，那这个就需要其他方法来进一步优化了。</p>
+<p>但本文的作者认为，视频中有大量帧是不包含任何感兴趣的动作的，如果不单独加入一个background的类，那这些没有任何感兴趣的动作的帧会被迫分类为某一个动作，这是不合适的，所以作者第一步就是加入了background这个类别。</p>
+<p>这时候目标检测里所存在的类别不均衡的问题就出来，如果加入background，那么必然大多数帧都应该是background，这时候background和包含感兴趣的动作的帧的数量就会有很大的差异，导致类别不均衡。<strong><em>（目标检测中的Focal Loss说不定可以一试？）</em></strong></p>
+<p>针对这个问题，作者提出了使用Filter Module来找出background并过滤的方法来解决。</p>
+<h3 id="method">Method</h3>
+<p><img src="Weakly-supervised-Action-Localization/image-20200727175656099.png" /></p>
+<p>上图就是作者提出的BaSNet（<strong>Ba</strong>ckground <strong>S</strong>uppression <strong>Net</strong>work），左边的特征提取用的是I3D双流网络，特征提取部分不参与网络的训练。给定一个长度为<span class="math inline">\(T\)</span>帧的视频片段，分别提取RGB和光流特征<span class="math inline">\(R^{F\times T}\)</span>，拼接起来之后得到整个片段的特征<span class="math inline">\(R^{2F\times T}\)</span>。</p>
+<p>网络采用双分支的结构，第一个base branch和其他网络类似，通过一个<span class="math inline">\(1\times 1\)</span>卷积得到<code>Class Activation Sequence(CAS)</code>。若数据集中一共有<span class="math inline">\(C\)</span>个动作类别，那么得到的CAS就是<span class="math inline">\(R^{(C+1)\times T}\)</span>，通道<span class="math inline">\(i\)</span>都表示片段中每一帧包含动作<span class="math inline">\(i\)</span>的得分，然后计算每个通道top-k的均值得到<span class="math inline">\(R^{(C+1)}\)</span>，设就是<code>video-level class score</code>了；对于第二个Suppression branch，就是多了一个加权的过程，对片段的特征做两个<span class="math inline">\(1\times 1\)</span>卷积，得到每帧不是background的概率，将这个概率和片段特征相乘之后再获得<code>CAS</code>，方法和base branch相同，并且卷积的参数是共享<strong><em>（这也可以？？）</em></strong>。</p>
+<p>这里有一个小细节，在base branch，所有帧的background这个类都设置为1，而在suppression branch这都设置为0，作者说这是为了让suppression branch正确区分是否是background。</p>
+<p>模型的损失是Binary Cross Entropy，就是每次判断是否是类别<span class="math inline">\(i\)</span>，而不是去判断他是C类中的哪一个，这样可以降低其他类别的影响，适合于<code>Multi-label</code>的任务（<code>Multi-class</code>是指数据集中的样本可被分为2以上的类别，<code>Multi-label</code>是指数据集中每个样本可以属于多个不同的类别）。</p>
+<p>最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一致。</p>
+<h2 id="cvpr-2019-completeness-modeling-and-context-separation-for-weakly-supervised-temporal-action-localization">CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization</h2>
+<p><img src="Weakly-supervised-Action-Localization/image-20200728161945465.png" /></p>
+<p>主要针对两个问题，一是动作的完整性，比如上图上方射门的例子，包含运动员射门和球飞行两个自动做，作者通过设计多个不同的分支网络，让他们分别关注动作的不同部分，最后求均值来获取更好的CAS。二是动作的上下文和一般的background是不一样的，例如上图下方，台球桌对识别打台球的动作是有帮助的，而且通常出现在动作发生的前后，其分布是有一定规律的，但是background的分布是随机的，同时这些动作上下文也会干扰动作区间的检测，作者通过构造难例来解决。</p>
+<h3 id="method-1">Method</h3>
+<p><img src="Weakly-supervised-Action-Localization/image-20200728162426054.png" /></p>
+<p>上图是作者提出的模型结构，首先是提取视频特征<span class="math inline">\(R^{T\times D}\)</span>，这里的<span class="math inline">\(T\)</span>作者说是片段数（the number of snippets）。因为预训练的特征提取网络所提取的特征可能不完全适应action localization，所以添加一个Embedding层，得到特征<span class="math inline">\(R^{T\times F}\)</span>。这个特征分别被被送到<span class="math inline">\(K\)</span>分类分支中去，其实就是一个<span class="math inline">\(1\times 1\)</span>卷积，然后再做<code>Softmax</code>得到CAS。为了防止这<span class="math inline">\(K\)</span>各分支学习到相同（或极其相似）的信息，作者加入了一个diversity loss，其中<span class="math inline">\(\overline{A^i_{\star,c}}\)</span>表示<code>Softmax</code>之后第<span class="math inline">\(i\)</span>个branch的第<span class="math inline">\(c\)</span>个类别的CAS <span class="math display">\[
+\mathcal{L}_{div}=\frac{1}{K(K-1)(C+1)/2}\sum_{c=1}^{C+1}{\sum_{i=1}^{K-1}{\sum_{j=i+1}^{K}}{\frac{\overline{A^i_{\star,c}}\cdot\overline{A^j_{\star,c}}}{\Vert\overline{A^i_{\star,c}}\Vert\ \Vert\overline{A^j_{\star,c}}\Vert}}}
+\]</span> 实际上就是让各个分支之间CAS的相似度尽可能小，也就是说不同的branch要在不同的时刻得到较高的激活值，这就能解决动作完整性的，问题，相当于每个branch关注动作的不同部分，虽然单个来看是不够完整的，但是拼在一起就是一个好的结果。</p>
+<p>作者通过实验观察到，往往会存在有一个branch值比较大，而其他branch的值接近于0，这样就会出现一个branch处于主导地位，这不是作者想要的；另一方面这<span class="math inline">\(K\)</span>个branch就像是相互竞争，类似于GAN，所以要尽可能平很各个branch。为此，作者引入了一个另一个损失，降低每个branch中每个类的标准差<strong><em>（没明白为什么要最小化标准差）</em></strong>，其中<span class="math inline">\(A^{avg}=\sum_{k=1}^K {A^k}\)</span> <span class="math display">\[
+\mathcal{L}_{norm}=\frac{1}{K(C+1)}\sum_{c=1}^{C+1}{\sum_{i=1}^{K}}{|\Vert{A^i_{\star,c}}\Vert - \Vert{A^{avg}_{\star,c}}\Vert|}
+\]</span> 最后作者又加了一个简单的Attention来学习片段的重要性，再利用它加权得到视频中含有各个动作的概率： <span class="math display">\[
+\overline{p}=softmax{\sum_{t=1}^T{att_tA^{avg}_{t,\star}}}
+\]</span> 上述这些模块就解决了动作完整性的问题，整体的损失函数为： <span class="math display">\[
+\mathcal{L}=\alpha\mathcal{L}_{div}+\beta\mathcal{L}_{norm}+\mathcal{L}_{mil}
+\]</span></p>
+<h3 id="localization">Localization</h3>
+<p>有点复杂。输入一个测试视频，得到它包含每个动作的概率，不考虑background，去掉所有包含这个动作的概率小于于0.1的CAS；在剩余的CAS中，利用<span class="math inline">\(\overline{A^{avg}_{\star,c}}\)</span>作为阈值选出大于阈值的片段，然后这些片段就作为一个proposal。接下来使用一些公式来个每个片段打个分，实际上就是他同时考虑这个片段的CAS均值和这个片段附近的CAS均值<strong><em>（可这个分有什么用呢？答：作为区间的置信度，用于NMS）</em></strong></p>
+<p><img src="Weakly-supervised-Action-Localization/image-20200728233533139.png" /></p>
+<h2 id="cvpr-2018-weakly-supervised-action-localization-by-sparse-temporal-pooling-network">CVPR-2018 Weakly Supervised Action Localization by Sparse Temporal Pooling Network</h2>
+<p>作者认为行为可以通过识别视频中的一些关键片段来识别，所以作者提出了一个能够自动学习片段重要性的网络，并自动选择一个具有代表性的自己来识别视频中的行为。</p>
+<p><img src="Weakly-supervised-Action-Localization/image-20200729092337446.png" /></p>
+<p>每个视频被分为<span class="math inline">\(T\)</span>个片段，每个以第<span class="math inline">\(t\)</span>帧为中心的视频片段都被表示成特征<span class="math inline">\(x_t\in R^m\)</span>，每个特征通过一个Attention Module得到一个该片段的权重值<span class="math inline">\(\lambda_t\)</span>，根据这些权重值加权求和后得到视频级的特征<span class="math inline">\(\overline{x}=\sum_{t=1}^T{\lambda_t x_t}\)</span>，这一视频级的特征被用来估计视频中包含每种动作的概率，并用多标签交叉熵损失函数来优化。而对学习得到的权重<span class="math inline">\(\lambda=[\lambda_1, \lambda_2,\cdots, \lambda_T]\)</span>，为了能够让让模型自动选择具有代表性的子集，所以使用了L1正则化来增加<span class="math inline">\(\lambda\)</span>的稀疏性。上述两个损失函数组合之后得到最终的损失函数： <span class="math display">\[
+\mathcal{L}=\mathcal{L}_{class}+\beta\cdot\mathcal{L}_{sparsity}
+\]</span> 同时，作者提出了Temporal Class Activation Map（T-CAM），其实就是一个公式变换。注意每个片段的特征<span class="math inline">\(x_t\in R^m\)</span>，公式里的<span class="math inline">\(m\)</span>是特征维数。 <span class="math display">\[
+\begin{align*}
+s^c&amp;=\sum_{k=1}^m{w^c_k\overline{x}_k} \\
+&amp;=\sum_{k=1}^m{w^c_k\sum_{t=1}^T{\lambda_t x_{t,k}}} \\
+&amp;=\sum_{t=1}^T{\lambda_t\sum_{k=1}^m{w^c_k x_{t,k}}}
+\end{align*}
+\]</span></p>
+<p>作者说他的T-CAM可以表示为<span class="math inline">\(a_t=(a_t^1,a_t^2,\cdots,a_t^T)^T\)</span>，其中<span class="math inline">\(a_t^c=\sum_{k=1}^m{w^c_k x_{t,k}}\)</span><strong><em>（这一步实现还是挺有意思的，作者在测试的时候直接获取了全连接层的权重矩阵）</em></strong></p>
+<h3 id="localization-1">Localization</h3>
+<p>以RGB为例，那么首先根据每个片段的权重值得到加权后的T-CAM <span class="math display">\[
+\psi_t^c=\lambda_t\cdot sigmoid(a_t^c)
+\]</span> 记者就是普通的阈值法获得temporal proposal，每个proposal可以表示为<span class="math inline">\([t_{start}, t_{end}, score]\)</span>，score的计算公式如下： <span class="math display">\[
+\sum_{t=t_{start}}^{t_{end}}{\lambda_{t,\star}\frac{\alpha \cdot a_{t,RGB}^{c}+(1-\alpha)\cdot a_{t,FLOW}^{c}}{t_{end} - t_{start} + 1}}
+\]</span> 实际上就是对这个proposal中的T-CAM加权求和，再做一些归一化（去除proposal长度不同带来的影响）。这个score用在NMS，以前的方法是直接选最长的一个proposal，显然不够合理。</p>
+<h2 id="iccv-2019-weakly-supervised-temporal-action-localization-through-contrast-based-evaluation-networks">ICCV-2019 Weakly Supervised Temporal Action Localization through Contrast based Evaluation Networks</h2>
+<p><img src="Weakly-supervised-Action-Localization/image-20200730101427059.png" /></p>
+<h2 id="cvpr-2017-untrimmednets-for-weakly-supervised-action-recognition-and-detection">CVPR-2017 UntrimmedNets for Weakly Supervised Action Recognition and Detection</h2>
+<p><img src="Weakly-supervised-Action-Localization/image-20200730121432490.png" /></p>
+<p>首先是片段采样，作者提出了两种采样方法。第一种是均匀采样，把一个视频分成等长的<span class="math inline">\(N\)</span>段，但是这种采样方式没有考虑到动作的连续性和一致性，因此生成的proposal可能是不够准确的；第二种采样方法是基于shot（镜头？）的采样，作者使用每帧的HOG特征的差值来划分shot。计算每帧图像的HOG特征，如果相邻帧之间HOG特征的差值超过了阈值，那么就是上一个shot的结束，下一个shot的开始。然后对每一个shot，每个连续<span class="math inline">\(K\)</span>帧都是一个proposal。</p>
+<p>对每个proposal，使用TSN和双流CNN分别提取特征，比较常规，输入的构造方法和原模型一致。</p>
+<p>分类模块很简单，就是一个全连接层再加一个softmax，得到每个proposal包含某个动作的概率，其中<span class="math inline">\(C\)</span>表示动作类别的个数，<span class="math inline">\(\phi(p)\)</span>表示第<span class="math inline">\(p\)</span>个proposal的特征： <span class="math display">\[
+\begin{align*}
+\mbox{x}^c(p)&amp;=W^c\phi(p)\\
+\mbox{x}^c(p)&amp;=[x^c_1(p),x^c_2(p),\cdots]\\
+\overline{x}^c_i(p)&amp;=\frac{\exp(x^c_i(p))}{\sum_{k=1}^C\exp(x^c_k(p))}
+\end{align*}
+\]</span> 接下来就是选择模块，选择出最有可能包含动作的proposal，作业也提出了两种方法。首先是hard selection，对每个动作类别，分别选出得分（这里用的是softmax之前的值）最高的<span class="math inline">\(k\)</span>个proposal；第二个是soft selection，其实就是标准的attention，是一个跨clip的融合吧。 <span class="math display">\[
+\begin{align*}
+x^s(p)&amp;={w^c}^T\phi(p)\\
+\overline{x}^s(p)&amp;=\frac{\exp(x^s(p))}{\sum_{k=1}^C\exp(x^s(k))}
+\end{align*}
+\]</span> 接着就是融合了，soft selection就根据<span class="math inline">\(\overline{x}^s(p)\)</span>来融合，hard selection因为没有做softmax，就再做一次softmax <span class="math display">\[
+\begin{align*}
+x_i^p(V)&amp;=\sum_{n=1}^{N}{x^s_i(n)x_i^c(n)} \\
+\overline{x}_i^p(V)&amp;=\frac{\exp(x_i^r(V))}{\sum_{k=1}^C\exp(x_k^r(V))} \\
+x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
+\end{align*}
+\]</span></p>
+<p>文中上下标混乱不堪，看懂意思就行了吧。</p>
+<h2 id="eccv-2018-weakly-supervised-temporal-action-localization-in-untrimmed-videos">ECCV-2018 Weakly-supervised Temporal Action Localization in Untrimmed Videos</h2>
+<h2 id="eccv-2018-w-talc-weakly-supervised-temporal-activity-localization-and-classification">ECCV-2018 W-TALC: Weakly Supervised Temporal Activity Localization and Classification</h2>
+]]></content>
+      <categories>
+        <category>Weakly-supervised Action Localization</category>
+      </categories>
+  </entry>
+</search>
