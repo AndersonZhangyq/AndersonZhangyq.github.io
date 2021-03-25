@@ -5,7 +5,7 @@ date: 2021-03-01 16:35:09
 tags:
 categories: "Pose Estimation"
 ---
-关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上。
+关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。
 
 ### OKS (Object Keypoint Similarity)
 
@@ -114,5 +114,19 @@ def compute_pck_pckh(dt_kpts,gt_kpts,refer_kpts):
 ```
 
 PCK现在用的不多，主要用的是OKS
+
+### AP（Average Precision）& AR（Average Recall）
+
+AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。
+$$
+P=\frac{TP}{TP+FP}
+$$
+$$
+R=\frac{TP}{TP+FN}
+$$
+
+关于COCO上各个[指标](https://cocodataset.org/#keypoints-eval)的具体定义可以参考下图
+
+![](Pose-Estimation-Metrics/image-20210325204226067.png)
 
 [人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客](https://blog.csdn.net/ZXF_1991/article/details/104279387)

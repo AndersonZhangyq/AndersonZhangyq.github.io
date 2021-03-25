@@ -34,7 +34,7 @@ Action Localization 任务是对Action Recognition任务的提高版，不仅仅
 
 模型的损失是Binary Cross Entropy，就是每次判断是否是类别$i$，而不是去判断他是C类中的哪一个，这样可以降低其他类别的影响，适合于`Multi-label`的任务（`Multi-class`是指数据集中的样本可被分为2以上的类别，`Multi-label`是指数据集中每个样本可以属于多个不同的类别）。
 
-最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一直。
+最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一致。
 
 ## CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization
 
