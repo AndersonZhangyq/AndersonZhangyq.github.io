@@ -330,17 +330,17 @@
 <p>这时候目标检测里所存在的类别不均衡的问题就出来，如果加入background，那么必然大多数帧都应该是background，这时候background和包含感兴趣的动作的帧的数量就会有很大的差异，导致类别不均衡。<strong><em>（目标检测中的Focal Loss说不定可以一试？）</em></strong></p>
 <p>针对这个问题，作者提出了使用Filter Module来找出background并过滤的方法来解决。</p>
 <h3 id="method">Method</h3>
-<p><img data-src="image-20200727175656099.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200727175656099.png" class="">
 <p>上图就是作者提出的BaSNet（<strong>Ba</strong>ckground <strong>S</strong>uppression <strong>Net</strong>work），左边的特征提取用的是I3D双流网络，特征提取部分不参与网络的训练。给定一个长度为<span class="math inline">\(T\)</span>帧的视频片段，分别提取RGB和光流特征<span class="math inline">\(R^{F\times T}\)</span>，拼接起来之后得到整个片段的特征<span class="math inline">\(R^{2F\times T}\)</span>。</p>
 <p>网络采用双分支的结构，第一个base branch和其他网络类似，通过一个<span class="math inline">\(1\times 1\)</span>卷积得到<code>Class Activation Sequence(CAS)</code>。若数据集中一共有<span class="math inline">\(C\)</span>个动作类别，那么得到的CAS就是<span class="math inline">\(R^{(C+1)\times T}\)</span>，通道<span class="math inline">\(i\)</span>都表示片段中每一帧包含动作<span class="math inline">\(i\)</span>的得分，然后计算每个通道top-k的均值得到<span class="math inline">\(R^{(C+1)}\)</span>，设就是<code>video-level class score</code>了；对于第二个Suppression branch，就是多了一个加权的过程，对片段的特征做两个<span class="math inline">\(1\times 1\)</span>卷积，得到每帧不是background的概率，将这个概率和片段特征相乘之后再获得<code>CAS</code>，方法和base branch相同，并且卷积的参数是共享<strong><em>（这也可以？？）</em></strong>。</p>
 <p>这里有一个小细节，在base branch，所有帧的background这个类都设置为1，而在suppression branch这都设置为0，作者说这是为了让suppression branch正确区分是否是background。</p>
 <p>模型的损失是Binary Cross Entropy，就是每次判断是否是类别<span class="math inline">\(i\)</span>，而不是去判断他是C类中的哪一个，这样可以降低其他类别的影响，适合于<code>Multi-label</code>的任务（<code>Multi-class</code>是指数据集中的样本可被分为2以上的类别，<code>Multi-label</code>是指数据集中每个样本可以属于多个不同的类别）。</p>
 <p>最后设定阈值，超过阈值的认为是包含感兴趣的动作，然后把这些连起来就是一个候选动作区间。至于得到这些区间之后怎么继续下去，作者说和下面这篇论文一致。</p>
 <h2 id="cvpr-2019-completeness-modeling-and-context-separation-for-weakly-supervised-temporal-action-localization">CVPR-2019 Completeness Modeling and Context Separation for Weakly Supervised Temporal Action Localization</h2>
-<p><img data-src="image-20200728161945465.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200728161945465.png" class="">
 <p>主要针对两个问题，一是动作的完整性，比如上图上方射门的例子，包含运动员射门和球飞行两个自动做，作者通过设计多个不同的分支网络，让他们分别关注动作的不同部分，最后求均值来获取更好的CAS。二是动作的上下文和一般的background是不一样的，例如上图下方，台球桌对识别打台球的动作是有帮助的，而且通常出现在动作发生的前后，其分布是有一定规律的，但是background的分布是随机的，同时这些动作上下文也会干扰动作区间的检测，作者通过构造难例来解决。</p>
 <h3 id="method-1">Method</h3>
-<p><img data-src="image-20200728162426054.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200728162426054.png" class="">
 <p>上图是作者提出的模型结构，首先是提取视频特征<span class="math inline">\(R^{T\times D}\)</span>，这里的<span class="math inline">\(T\)</span>作者说是片段数（the number of snippets）。因为预训练的特征提取网络所提取的特征可能不完全适应action localization，所以添加一个Embedding层，得到特征<span class="math inline">\(R^{T\times F}\)</span>。这个特征分别被被送到<span class="math inline">\(K\)</span>分类分支中去，其实就是一个<span class="math inline">\(1\times 1\)</span>卷积，然后再做<code>Softmax</code>得到CAS。为了防止这<span class="math inline">\(K\)</span>各分支学习到相同（或极其相似）的信息，作者加入了一个diversity loss，其中<span class="math inline">\(\overline{A^i_{\star,c}}\)</span>表示<code>Softmax</code>之后第<span class="math inline">\(i\)</span>个branch的第<span class="math inline">\(c\)</span>个类别的CAS <span class="math display">\[
 \mathcal{L}_{div}=\frac{1}{K(K-1)(C+1)/2}\sum_{c=1}^{C+1}{\sum_{i=1}^{K-1}{\sum_{j=i+1}^{K}}{\frac{\overline{A^i_{\star,c}}\cdot\overline{A^j_{\star,c}}}{\Vert\overline{A^i_{\star,c}}\Vert\ \Vert\overline{A^j_{\star,c}}\Vert}}}
 \]</span> 实际上就是让各个分支之间CAS的相似度尽可能小，也就是说不同的branch要在不同的时刻得到较高的激活值，这就能解决动作完整性的，问题，相当于每个branch关注动作的不同部分，虽然单个来看是不够完整的，但是拼在一起就是一个好的结果。</p>
@@ -353,10 +353,10 @@
 \]</span></p>
 <h3 id="localization">Localization</h3>
 <p>有点复杂。输入一个测试视频，得到它包含每个动作的概率，不考虑background，去掉所有包含这个动作的概率小于于0.1的CAS；在剩余的CAS中，利用<span class="math inline">\(\overline{A^{avg}_{\star,c}}\)</span>作为阈值选出大于阈值的片段，然后这些片段就作为一个proposal。接下来使用一些公式来个每个片段打个分，实际上就是他同时考虑这个片段的CAS均值和这个片段附近的CAS均值<strong><em>（可这个分有什么用呢？答：作为区间的置信度，用于NMS）</em></strong></p>
-<p><img data-src="image-20200728233533139.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200728233533139.png" class="">
 <h2 id="cvpr-2018-weakly-supervised-action-localization-by-sparse-temporal-pooling-network">CVPR-2018 Weakly Supervised Action Localization by Sparse Temporal Pooling Network</h2>
 <p>作者认为行为可以通过识别视频中的一些关键片段来识别，所以作者提出了一个能够自动学习片段重要性的网络，并自动选择一个具有代表性的自己来识别视频中的行为。</p>
-<p><img data-src="image-20200729092337446.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200729092337446.png" class="">
 <p>每个视频被分为<span class="math inline">\(T\)</span>个片段，每个以第<span class="math inline">\(t\)</span>帧为中心的视频片段都被表示成特征<span class="math inline">\(x_t\in R^m\)</span>，每个特征通过一个Attention Module得到一个该片段的权重值<span class="math inline">\(\lambda_t\)</span>，根据这些权重值加权求和后得到视频级的特征<span class="math inline">\(\overline{x}=\sum_{t=1}^T{\lambda_t x_t}\)</span>，这一视频级的特征被用来估计视频中包含每种动作的概率，并用多标签交叉熵损失函数来优化。而对学习得到的权重<span class="math inline">\(\lambda=[\lambda_1, \lambda_2,\cdots, \lambda_T]\)</span>，为了能够让让模型自动选择具有代表性的子集，所以使用了L1正则化来增加<span class="math inline">\(\lambda\)</span>的稀疏性。上述两个损失函数组合之后得到最终的损失函数： <span class="math display">\[
 \mathcal{L}=\mathcal{L}_{class}+\beta\cdot\mathcal{L}_{sparsity}
 \]</span> 同时，作者提出了Temporal Class Activation Map（T-CAM），其实就是一个公式变换。注意每个片段的特征<span class="math inline">\(x_t\in R^m\)</span>，公式里的<span class="math inline">\(m\)</span>是特征维数。 <span class="math display">\[
@@ -374,9 +374,9 @@ s^c&amp;=\sum_{k=1}^m{w^c_k\overline{x}_k} \\
 \sum_{t=t_{start}}^{t_{end}}{\lambda_{t,\star}\frac{\alpha \cdot a_{t,RGB}^{c}+(1-\alpha)\cdot a_{t,FLOW}^{c}}{t_{end} - t_{start} + 1}}
 \]</span> 实际上就是对这个proposal中的T-CAM加权求和，再做一些归一化（去除proposal长度不同带来的影响）。这个score用在NMS，以前的方法是直接选最长的一个proposal，显然不够合理。</p>
 <h2 id="iccv-2019-weakly-supervised-temporal-action-localization-through-contrast-based-evaluation-networks">ICCV-2019 Weakly Supervised Temporal Action Localization through Contrast based Evaluation Networks</h2>
-<p><img data-src="image-20200730101427059.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200730101427059.png" class="">
 <h2 id="cvpr-2017-untrimmednets-for-weakly-supervised-action-recognition-and-detection">CVPR-2017 UntrimmedNets for Weakly Supervised Action Recognition and Detection</h2>
-<p><img data-src="image-20200730121432490.png" /></p>
+<img data-src="/2020/07/27/Weakly-supervised-Action-Localization/image-20200730121432490.png" class="">
 <p>首先是片段采样，作者提出了两种采样方法。第一种是均匀采样，把一个视频分成等长的<span class="math inline">\(N\)</span>段，但是这种采样方式没有考虑到动作的连续性和一致性，因此生成的proposal可能是不够准确的；第二种采样方法是基于shot（镜头？）的采样，作者使用每帧的HOG特征的差值来划分shot。计算每帧图像的HOG特征，如果相邻帧之间HOG特征的差值超过了阈值，那么就是上一个shot的结束，下一个shot的开始。然后对每一个shot，每个连续<span class="math inline">\(K\)</span>帧都是一个proposal。</p>
 <p>对每个proposal，使用TSN和双流CNN分别提取特征，比较常规，输入的构造方法和原模型一致。</p>
 <p>分类模块很简单，就是一个全连接层再加一个softmax，得到每个proposal包含某个动作的概率，其中<span class="math inline">\(C\)</span>表示动作类别的个数，<span class="math inline">\(\phi(p)\)</span>表示第<span class="math inline">\(p\)</span>个proposal的特征： <span class="math display">\[

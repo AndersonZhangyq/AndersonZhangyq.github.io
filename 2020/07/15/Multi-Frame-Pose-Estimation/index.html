@@ -319,11 +319,11 @@
     
     <div class="post-body" itemprop="articleBody">
         <h2 id="iccv-2015-flowing-convnets-for-human-pose-estimation-in-videos">ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos</h2>
-<p><img data-src="image-20200715225905146.png" /></p>
+<img data-src="/2020/07/15/Multi-Frame-Pose-Estimation/image-20200715225905146.png" class="">
 <p>主要使用光流来提高估计的准确度。首先得到<span class="math inline">\([t-n,t+n]\)</span>帧关节k的热力图，然后计算<span class="math inline">\([t-n,t+n]\)</span>中所有帧到第t帧的光流，然后利用光流将其他帧的热力图和第t帧的对齐。记<span class="math inline">\(w_{t+1\rightarrow t}\)</span>为第t+1帧到第t帧的光流，那么<span class="math inline">\(H_{t+1}\)</span>根据光流对齐后的热力图可以表示为 <span class="math display">\[
 \hat{H}_{t+1}(x,y)=H_{t+1}(x-w_x^{t+1\rightarrow t},y-w_y^{t+1\rightarrow t})
 \]</span> 最后经过一个<span class="math inline">\(1*1\)</span>的卷积（也就是通道上的加权平均）得到第t帧关节k的热力图。并且实验从下图的实验结果中可以发现，使用这种pooling的效果更好，而且随着n的增加效果稳步提升。</p>
-<p><img data-src="image-20200715232718905.png" /></p>
+<img data-src="/2020/07/15/Multi-Frame-Pose-Estimation/image-20200715232718905.png" class="">
 <h2 id="cvpr-2017-thin-slicing-network-a-deep-structured-model-for-pose-estimation-in-videos">CVPR-2017 Thin-Slicing Network: A Deep Structured Model for Pose Estimation in Videos</h2>
 <p>本文把姿势估计分解成两个子问题，分别是Spatial Consistency和Temporal Consistency。对于Spatial Consistency，作者通过以下公式建模： <span class="math display">\[
 S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
@@ -341,11 +341,11 @@ S(I,p)=\sum_{i\in V}{\phi_i(p_i|I)}+\sum_{(i,j)\in E_s}{\psi_{i,j}(p_i,p_j)}
 \end{align*}
 \]</span> <span class="math inline">\(\psi\)</span>和之前的一样，只是这个<span class="math inline">\(i^\star\)</span>复杂了一点。这里的<span class="math inline">\(E_t\)</span>是把相邻帧之间同一个关节点连接起来的边的结合，也就是下图中的橙色线。<span class="math inline">\(f_{i^\star,i}(x)\)</span>表示的是按照<span class="math inline">\(i^\star\)</span>所在帧到<span class="math inline">\(i\)</span>所在帧的光流移动点<span class="math inline">\(x\)</span>，其实就是下图中左侧<code>flow warp</code>。举个例子，先估计出<span class="math inline">\(t-1\)</span>帧的关节点，然后按照<span class="math inline">\(t-1\)</span>帧到<span class="math inline">\(t\)</span>帧的光流，把每个关节点按照光流做<code>propagate</code>，propagate之后的关节点就是<span class="math inline">\(i^\star\)</span>。</p>
 <p>从不同帧使用Temporal Information估计同一帧的关节点，如果大家估计的差不多，那么说明有很好的一致性，关节点的连续性得到了保证。</p>
-<p><img data-src="image-20200716090204471.png" /></p>
+<img data-src="/2020/07/15/Multi-Frame-Pose-Estimation/image-20200716090204471.png" class="">
 <p>最终的目的就是最大化上述两个式子，就能实现时空一致性。</p>
 <h2 id="cvpr-2018-detect-and-track-efficient-pose-estimation-in-videos">CVPR-2018 Detect-and-Track: Efficient Pose Estimation in Videos</h2>
 <p>网络结构如下图所示。其实这个做法非常非常的简单，就是一个多任务学习，收到<code>I3D</code>的启发，把<code>Mask RCNN</code>改成了3D卷积的形式，原来的<code>RPN</code>（<code>Region Proposal Network</code>）改成了<code>TPN</code>（<code>Tube Proposal Network</code>）。这个Tube很好理解，原来RPN是在图上找一个矩形区域，那如果一个视频的话，连续T帧都在同一个位置划定一个矩形，连接起来不就是个Tube了。并且<code>Mask RCNN</code>本来就有一个head是用来做关键点检测的，嗯，所以他主要就是把2D卷积换成了3D卷积。这里的Spatio-Temporal RoIAlign其实就是对每帧上的RoI做RoIAlign，然后再按顺序拼接起来。</p>
-<p><img data-src="image-20200716093209065.png" /></p>
+<img data-src="/2020/07/15/Multi-Frame-Pose-Estimation/image-20200716093209065.png" class="">
 <h2 id="cvpr-2018-lstm-pose-machines">CVPR-2018 LSTM Pose Machines</h2>
 <p>套个LSTM就完事了，Temporal Information让他自己去学吧。</p>
 
