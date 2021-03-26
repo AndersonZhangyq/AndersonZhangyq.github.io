@@ -24,12 +24,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos WASP WASP的结构如下图所示（实际上该作者还写过一篇论文Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation，单独写了这个WA">
+<meta name="description" content="姿态检测论文笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pose-Estimation 论文">
 <meta property="og:url" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/index.html">
 <meta property="og:site_name" content="Anderson&#39;s Blog">
-<meta property="og:description" content="CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos WASP WASP的结构如下图所示（实际上该作者还写过一篇论文Waterfall Atrous Spatial Pooling Architecture for Efficient Semantic Segmentation，单独写了这个WA">
+<meta property="og:description" content="姿态检测论文笔记">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/WASP.png">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/ASPP.png">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/Unipose-LSTM.png">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/LSTM-Pose-Overview.png">
 <meta property="article:published_time" content="2020-07-15T01:57:29.000Z">
-<meta property="article:modified_time" content="2020-07-21T09:11:16.605Z">
+<meta property="article:modified_time" content="2021-03-26T00:22:36.917Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/WASP.png">
@@ -145,7 +145,7 @@
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
         <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">10</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -225,7 +225,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -314,6 +314,7 @@
   
 </div>
 
+            <div class="post-description">姿态检测论文笔记</div>
         </div>
       </header>
 

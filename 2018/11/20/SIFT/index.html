@@ -24,18 +24,18 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="What is SIFT(Scale-invariant Feature Transform) SIFT，它既是一个 Detector，又是一个 Descriptor。SIFT具有尺度不变性、旋转不变性、光照不变性和视角不变性。那么我们为什么需要这些性质呢？ 显然，这些性质是有实际需求的。以尺度不变性为例，当我们在使用 Harris 算子做角点检测时，我们所划定的区域大小直接决定了我们是否能提">
+<meta name="description" content="SIFT介绍与计算">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SIFT">
 <meta property="og:url" content="https://andersonzhangyq.github.io/2018/11/20/SIFT/index.html">
 <meta property="og:site_name" content="Anderson&#39;s Blog">
-<meta property="og:description" content="What is SIFT(Scale-invariant Feature Transform) SIFT，它既是一个 Detector，又是一个 Descriptor。SIFT具有尺度不变性、旋转不变性、光照不变性和视角不变性。那么我们为什么需要这些性质呢？ 显然，这些性质是有实际需求的。以尺度不变性为例，当我们在使用 Harris 算子做角点检测时，我们所划定的区域大小直接决定了我们是否能提">
+<meta property="og:description" content="SIFT介绍与计算">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2018/11/20/SIFT/scale.png">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2018/11/20/SIFT/sift-octaves.png">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2018/11/20/SIFT/select_max.png">
 <meta property="article:published_time" content="2018-11-20T09:00:52.000Z">
-<meta property="article:modified_time" content="2020-07-21T09:11:16.648Z">
+<meta property="article:modified_time" content="2021-03-26T00:22:51.942Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://andersonzhangyq.github.io/2018/11/20/SIFT/scale.png">
@@ -141,7 +141,7 @@
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
         <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">9</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">10</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -221,7 +221,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -310,6 +310,7 @@
   
 </div>
 
+            <div class="post-description">SIFT介绍与计算</div>
         </div>
       </header>
 
