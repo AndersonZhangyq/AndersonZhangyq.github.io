@@ -4,6 +4,7 @@ date: 2020-07-15 09:57:29
 tags:
 categories: "Pose Estimation"
 typora-copy-images-to: {{ title }}
+description: 姿态检测论文笔记
 ---
 
 ## CVPR-2020 UniPose: Unified Human Pose Estimation in Single Images and Videos

@@ -6,6 +6,7 @@ tags:
 categories:
     - ["Action Localization"]
     - ["Temporal Segment Proposal"]
+description: Action Localization任务是回归出视频中感兴趣动作发生的起始时间和结束时间，而Temporal Segment Proposal通常作为Action Localization的一个子任务，目标是得到高质量的包含动作的区间，并且这个算法应该尽可能地快。
 ---
 
 Action Localization任务是回归出视频中感兴趣动作发生的起始时间和结束时间，而Temporal Segment Proposal通常作为Action Localization的一个子任务，目标是得到高质量的包含动作的区间，并且这个算法应该尽可能地快。

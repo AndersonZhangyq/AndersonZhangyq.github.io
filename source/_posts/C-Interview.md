@@ -3,7 +3,8 @@ title: C++ Interview
 typora-copy-images-to: C++ Interview
 date: 2021-03-19 09:41:57
 tags:
-categories:
+categories: C++
+description: C++基础知识和面试题
 ---
 
 ## const

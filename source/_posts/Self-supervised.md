@@ -4,6 +4,7 @@ typora-copy-images-to: Self-supervised
 date: 2020-07-21 17:27:08
 tags:
 categories: Self-supervised
+description: 自监督论文笔记
 ---
 
 ## CVPR 2020 SelFlow: Self-Supervised Learning of Optical Flow

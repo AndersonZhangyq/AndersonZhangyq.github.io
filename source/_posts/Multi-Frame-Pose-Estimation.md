@@ -4,6 +4,7 @@ typora-copy-images-to: Multi-Frame-Pose-Estimation
 date: 2020-07-15 22:53:42
 tags:
 categories: "Pose Estimation"
+description: 基于多帧的姿态检测
 ---
 
 ## ICCV-2015 Flowing ConvNets for Human Pose Estimation in Videos

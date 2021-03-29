@@ -4,6 +4,7 @@ typora-copy-images-to: Pose-Estimation-Metrics
 date: 2021-03-01 16:35:09
 tags:
 categories: "Pose Estimation"
+description: 姿态检测的各项指标定义和计算
 ---
 关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。
 

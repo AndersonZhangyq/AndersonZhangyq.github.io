@@ -3,6 +3,7 @@ title: SVM 梯度
 date: 2020-02-11 12:13:54
 tags:
 categories: cs231n
+description: SVM梯度计算
 ---
 
 # SVM 损失函数的梯度

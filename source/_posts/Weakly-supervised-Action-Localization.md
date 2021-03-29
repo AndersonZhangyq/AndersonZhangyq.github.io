@@ -4,6 +4,7 @@ typora-copy-images-to: Weakly-supervised-Action-Localization
 date: 2020-07-27 17:26:05
 tags:
 categories: "Weakly-supervised Action Localization"
+description: 弱监督的Action Localization
 ---
 
 Action Localization 任务是对Action Recognition任务的提高版，不仅仅需要识别出视频中的是什么动作，还需要知道这个动作起始帧和终止帧的具体位置。如果是Action Recognition是图片分类的话，那么Action Localization就是目标检测，不仅仅要知道bounding box里面的是什么，还要知道这个bounding box应该画在哪里。

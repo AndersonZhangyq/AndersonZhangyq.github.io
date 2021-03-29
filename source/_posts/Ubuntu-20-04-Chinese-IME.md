@@ -4,6 +4,7 @@ typora-copy-images-to: Ubuntu 20.04 Chinese IME
 date: 2020-07-20 20:09:09
 tags:
 categories: Ubuntu
+description: Ubuntu 20.04 设置 中文输入法
 ---
 
 搜狗输入法在 Ubuntu 20.04 上没法用了（因为依赖了Qt4？），试了试Google拼音输入法，一言难尽，没有词库，打个字是真的累，想了想，还是再去找找其他输入法吧。

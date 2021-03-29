@@ -3,6 +3,7 @@ title: 最大熵模型
 date: 2018-12-04 09:46:18
 tags:
 categories: Machine Learning
+description: 最大熵模型介绍和推导
 ---
 
 # 熵

@@ -3,6 +3,7 @@ title: SIFT
 date: 2018-11-20 17:00:52
 tags:
 categories: Computer Vision
+description: SIFT介绍与计算
 ---
 
 # What is SIFT(Scale-invariant Feature Transform)
