@@ -119,6 +119,8 @@ PCK现在用的不多，主要用的是OKS
 ### AP（Average Precision）& AR（Average Recall）
 
 AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。
+
+在计算AP和AR之前，先要画出$OKS=k$下的PR曲线。先对每个检测结果排序，然后计算从头到第k个结果时的Precision和Recall，就能画出PR曲线了，算出曲线下面积，在COCO中用的是11点采样法。Precision和Recall的计算方式如下所示：
 $$
 P=\frac{TP}{TP+FP}
 $$
@@ -126,8 +128,14 @@ $$
 R=\frac{TP}{TP+FN}
 $$
 
+对于多人关键点检测的任务，首先要做的是将检测到的结果`dt`和`gt`做匹配（$OKS \gt k$则为一对匹配，每个`dt`会和`OKS`最大的相匹配），那么就可能会出现有的`dt`没有与之相匹配的`gt`。从代码中可知，COCO中将TP定义为有匹配并且匹配到的不是`ignore`的`gt`，FP的定义为没有匹配的`gt`，$TP+FN$其实就是所有的`gt`个数。
+
+$OKS=k$下，$AP^{OKS=k}$就是此时所有的Precision的均值，$AP=\sum_{k\in0.5:0.05:0.95}{AP^{OKS=k}}$，$AR$同理。
+
 关于COCO上各个[指标](https://cocodataset.org/#keypoints-eval)的具体定义可以参考下图
 
 ![](Pose-Estimation-Metrics/image-20210325204226067.png)
 
 [人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客](https://blog.csdn.net/ZXF_1991/article/details/104279387)
+
+[目标检测中的mAP是什么含义？ - 知乎](https://zhuanlan.zhihu.com/p/107989173)
