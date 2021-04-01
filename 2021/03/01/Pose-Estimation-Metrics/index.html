@@ -33,7 +33,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/image-20210325204226067.png">
 <meta property="article:published_time" content="2021-03-01T08:35:09.000Z">
-<meta property="article:modified_time" content="2021-03-26T00:22:27.413Z">
+<meta property="article:modified_time" content="2021-04-01T06:42:45.650Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://andersonzhangyq.github.io/2021/03/01/Pose-Estimation-Metrics/image-20210325204226067.png">
@@ -138,7 +138,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a></li>
         <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">10</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
@@ -196,7 +196,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#oks-object-keypoint-similarity"><span class="nav-number">1.</span> <span class="nav-text">OKS (Object Keypoint Similarity)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#oks-%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.</span> <span class="nav-text">OKS 矩阵</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pck-percentage-of-correct-keypoints"><span class="nav-number">2.</span> <span class="nav-text">PCK (Percentage of Correct Keypoints)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apaverage-precision-araverage-recall"><span class="nav-number">3.</span> <span class="nav-text">AP（Average Precision）&amp; AR（Average Recall）</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#OKS-Object-Keypoint-Similarity"><span class="nav-number">1.</span> <span class="nav-text">OKS (Object Keypoint Similarity)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#OKS-%E7%9F%A9%E9%98%B5"><span class="nav-number">1.1.</span> <span class="nav-text">OKS 矩阵</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PCK-Percentage-of-Correct-Keypoints"><span class="nav-number">2.</span> <span class="nav-text">PCK (Percentage of Correct Keypoints)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AP%EF%BC%88Average-Precision%EF%BC%89-amp-AR%EF%BC%88Average-Recall%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">AP（Average Precision）&amp; AR（Average Recall）</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -212,7 +212,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -221,6 +221,10 @@
           
         <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
@@ -317,39 +321,37 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>关键点检测的指标主要是OKS和PCK。其中OKS是现在的常用指标，PCK主要用在MPII等较老的数据集上，从OKS还衍生出AP和AR两个指标。</p>
-<h3 id="oks-object-keypoint-similarity">OKS (Object Keypoint Similarity)</h3>
-<p><span class="math display">\[
-OKS_p = \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}=1)}{\sum_i\delta(v_{pi}=1)}
-\]</span></p>
-<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
-<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
-<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
-<p><span class="math inline">\(S_p\)</span> 表示尺度缩放因子，<span class="math inline">\(S_p=\sqrt{(x_2-x_1)(y_2-y_1)}\)</span></p>
-<p><span class="math inline">\(\sigma_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的归一化因子，对数据集中所有groundtruth计算的标准差而得到的，反映出当前骨骼点标注时候的标准差， <span class="math inline">\(\sigma_i\)</span>越大则越难标注</p>
-<p><span class="math inline">\(v_{pi}\)</span>表示关节点是否可见</p>
+<h3 id="OKS-Object-Keypoint-Similarity"><a href="#OKS-Object-Keypoint-Similarity" class="headerlink" title="OKS (Object Keypoint Similarity)"></a>OKS (Object Keypoint Similarity)</h3><p>$$<br>OKS_p = \frac{\sum_i\exp(\frac{-d^2_{pi}}{2S^2_p\sigma^2_i})\delta(v_{pi}=1)}{\sum_i\delta(v_{pi}=1)}<br>$$</p>
+<p>$p$ 表示<code>person id</code></p>
+<p>$i$表示 <code>keypoint id</code></p>
+<p>$d_{pi}$表示预测的关节点和标注的关节点的欧氏距离</p>
+<p>$S_p$ 表示尺度缩放因子，$S_p=\sqrt{(x_2-x_1)(y_2-y_1)}$</p>
+<p>$\sigma_i$ 表示第$i$个骨骼点的归一化因子，对数据集中所有groundtruth计算的标准差而得到的，反映出当前骨骼点标注时候的标准差， $\sigma_i$越大则越难标注</p>
+<p>$v_{pi}$表示关节点是否可见</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_oks</span>(<span class="params">dts, gts</span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(dts) * <span class="built_in">len</span>(gts) == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> np.array([])</span><br><span class="line">    oks_mat = np.zeros((<span class="built_in">len</span>(dts), <span class="built_in">len</span>(gts)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># compute oks between each detection and ground truth object</span></span><br><span class="line">    <span class="keyword">for</span> j, gt <span class="keyword">in</span> <span class="built_in">enumerate</span>(gts):</span><br><span class="line">        <span class="comment"># create bounds for ignore regions(double the gt bbox)</span></span><br><span class="line">        g = np.array(gt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">        xg = g[<span class="number">0</span>::<span class="number">3</span>]; yg = g[<span class="number">1</span>::<span class="number">3</span>]; vg = g[<span class="number">2</span>::<span class="number">3</span>]</span><br><span class="line">        k1 = np.count_nonzero(vg &gt; <span class="number">0</span>)</span><br><span class="line">        bb = gt[<span class="string">&#x27;bbox&#x27;</span>]</span><br><span class="line">        x0 = bb[<span class="number">0</span>] - bb[<span class="number">2</span>]; x1 = bb[<span class="number">0</span>] + bb[<span class="number">2</span>] * <span class="number">2</span></span><br><span class="line">        y0 = bb[<span class="number">1</span>] - bb[<span class="number">3</span>]; y1 = bb[<span class="number">1</span>] + bb[<span class="number">3</span>] * <span class="number">2</span></span><br><span class="line">        <span class="keyword">for</span> i, dt <span class="keyword">in</span> <span class="built_in">enumerate</span>(dts):</span><br><span class="line">            d = np.array(dt[<span class="string">&#x27;keypoints&#x27;</span>])</span><br><span class="line">            xd = d[<span class="number">0</span>::<span class="number">3</span>]; yd = d[<span class="number">1</span>::<span class="number">3</span>]</span><br><span class="line">            <span class="keyword">if</span> k1&gt;<span class="number">0</span>:</span><br><span class="line">                <span class="comment"># measure the per-keypoint distance if keypoints visible</span></span><br><span class="line">                dx = xd - xg</span><br><span class="line">                dy = yd - yg</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># measure minimum distance to keypoints in (x0,y0) &amp; (x1,y1)</span></span><br><span class="line">                z = np.zeros((<span class="built_in">len</span>(sigmas)))</span><br><span class="line">                dx = np.<span class="built_in">max</span>((z, x0-xd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, xd-x1),axis=<span class="number">0</span>)</span><br><span class="line">                dy = np.<span class="built_in">max</span>((z, y0-yd),axis=<span class="number">0</span>)+np.<span class="built_in">max</span>((z, yd-y1),axis=<span class="number">0</span>)</span><br><span class="line">            e = (dx**<span class="number">2</span> + dy**<span class="number">2</span>) / variances / (gt[<span class="string">&#x27;area&#x27;</span>]+np.spacing(<span class="number">1</span>)) / <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> k1 &gt; <span class="number">0</span>:</span><br><span class="line">                e=e[vg &gt; <span class="number">0</span>]</span><br><span class="line">            oks_mat[i, j] = np.<span class="built_in">sum</span>(np.exp(-e)) / e.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> oks_mat</span><br></pre></td></tr></table></figure>
-<h4 id="oks-矩阵">OKS 矩阵</h4>
-<p>对于多人姿态估计，若gt中M个人，预测了N个人，计算两两之间的OKS构成<span class="math inline">\(M\times N\)</span>矩阵，最后选择每个gt的人中最大的OKS值作为结果。</p>
-<h3 id="pck-percentage-of-correct-keypoints">PCK (Percentage of Correct Keypoints)</h3>
-<p><span class="math display">\[
-PCK_p^i=\frac{\sum_p\delta(\frac{d_{pi}}{d_{p}^{def}}\le T_i)}{\sum_p1}
-\]</span></p>
-<p><span class="math inline">\(p\)</span> 表示<code>person id</code></p>
-<p><span class="math inline">\(i\)</span>表示 <code>keypoint id</code></p>
-<p><span class="math inline">\(d_{pi}\)</span>表示预测的关节点和标注的关节点的欧氏距离</p>
-<p><span class="math inline">\(d_{p}^{def}\)</span> 表示尺度缩放因子，对于FLIC使用的是躯干直径（左肩到左臀或右肩到左臀），对于MPII用的是头部对角线的长度（<strong>PCKh</strong>）</p>
-<p><span class="math inline">\(T_i\)</span> 表示第<span class="math inline">\(i\)</span>个骨骼点的阈值</p>
+
+
+
+<h4 id="OKS-矩阵"><a href="#OKS-矩阵" class="headerlink" title="OKS 矩阵"></a>OKS 矩阵</h4><p>对于多人姿态估计，若gt中M个人，预测了N个人，计算两两之间的OKS构成$M\times N$矩阵，最后选择每个gt的人中最大的OKS值作为结果。</p>
+<h3 id="PCK-Percentage-of-Correct-Keypoints"><a href="#PCK-Percentage-of-Correct-Keypoints" class="headerlink" title="PCK (Percentage of Correct Keypoints)"></a>PCK (Percentage of Correct Keypoints)</h3><p>$$<br>PCK_p^i=\frac{\sum_p\delta(\frac{d_{pi}}{d_{p}^{def}}\le T_i)}{\sum_p1}<br>$$</p>
+<p>$p$ 表示<code>person id</code></p>
+<p>$i$表示 <code>keypoint id</code></p>
+<p>$d_{pi}$表示预测的关节点和标注的关节点的欧氏距离</p>
+<p>$d_{p}^{def}$ 表示尺度缩放因子，对于FLIC使用的是躯干直径（左肩到左臀或右肩到左臀），对于MPII用的是头部对角线的长度（<strong>PCKh</strong>）</p>
+<p>$T_i$ 表示第$i$个骨骼点的阈值</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_pck_pckh</span>(<span class="params">dt_kpts,gt_kpts,refer_kpts</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    pck指标计算</span></span><br><span class="line"><span class="string">    :param dt_kpts:算法检测输出的估计结果,shape=[n,h,w]=[行人数，２，关键点个数]</span></span><br><span class="line"><span class="string">    :param gt_kpts: groundtruth人工标记结果,shape=[n,h,w]</span></span><br><span class="line"><span class="string">    :param refer_kpts: 尺度因子，用于预测点与groundtruth的欧式距离的scale。</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pck指标：躯干直径，左肩点－右臀点的欧式距离；</span></span><br><span class="line"><span class="string">    　　　　　　　　　　　pckh指标：头部长度，头部rect的对角线欧式距离；</span></span><br><span class="line"><span class="string">    :return: 相关指标</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    dt=np.array(dt_kpts)</span><br><span class="line">    gt=np.array(gt_kpts)</span><br><span class="line">    <span class="keyword">assert</span>(<span class="built_in">len</span>(refer_kpts)==<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">assert</span>(dt.shape[<span class="number">0</span>]==gt.shape[<span class="number">0</span>])</span><br><span class="line">    ranges=np.arange(<span class="number">0.0</span>,<span class="number">0.1</span>,<span class="number">0.01</span>)</span><br><span class="line">    kpts_num=gt.shape[<span class="number">2</span>]</span><br><span class="line">    ped_num=gt.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">#compute dist</span></span><br><span class="line">    scale=np.sqrt(np.<span class="built_in">sum</span>(np.square(gt[:,:,refer_kpts[<span class="number">0</span>]]-gt[:,:,refer_kpts[<span class="number">1</span>]]),<span class="number">1</span>))</span><br><span class="line">    dist=np.sqrt(np.<span class="built_in">sum</span>(np.square(dt-gt),<span class="number">1</span>))/np.tile(scale,(gt.shape[<span class="number">2</span>],<span class="number">1</span>)).T</span><br><span class="line">    <span class="comment">#compute pck</span></span><br><span class="line">    pck = np.zeros([ranges.shape[<span class="number">0</span>], gt.shape[<span class="number">2</span>]+<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">for</span> idh,trh <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">list</span>(ranges)):</span><br><span class="line">        <span class="keyword">for</span> kpt_idx <span class="keyword">in</span> <span class="built_in">range</span>(kpts_num):</span><br><span class="line">            pck[idh,kpt_idx] = <span class="number">100</span>*np.mean(dist[:,kpt_idx] &lt;= trh)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># compute average pck</span></span><br><span class="line">        pck[idh,-<span class="number">1</span>] = <span class="number">100</span>*np.mean(dist &lt;= trh)</span><br><span class="line">    <span class="keyword">return</span> pck</span><br></pre></td></tr></table></figure>
+
 <p>PCK现在用的不多，主要用的是OKS</p>
-<h3 id="apaverage-precision-araverage-recall">AP（Average Precision）&amp; AR（Average Recall）</h3>
-<p>AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。 <span class="math display">\[
-P=\frac{TP}{TP+FP}
-\]</span> <span class="math display">\[
-R=\frac{TP}{TP+FN}
-\]</span></p>
-<p>关于COCO上各个<span class="exturl" data-url="aHR0cHM6Ly9jb2NvZGF0YXNldC5vcmcvI2tleXBvaW50cy1ldmFs">指标<i class="fa fa-external-link-alt"></i></span>的具体定义可以参考下图</p>
+<h3 id="AP（Average-Precision）-amp-AR（Average-Recall）"><a href="#AP（Average-Precision）-amp-AR（Average-Recall）" class="headerlink" title="AP（Average Precision）&amp; AR（Average Recall）"></a>AP（Average Precision）&amp; AR（Average Recall）</h3><p>AP和AR都是针对整个数据集而言的。在算Precision或者Recall之前，必然先要对关键点检测结果进行排序，很多文章都没有明确这里排序的依据是什么。从实现上来看，是根据人检测框的置信度高低进行排序的。</p>
+<p>在计算AP和AR之前，先要画出$OKS=k$下的PR曲线。先对每个检测结果排序，然后计算从头到第k个结果时的Precision和Recall，就能画出PR曲线了，算出曲线下面积，在COCO中用的是11点采样法。Precision和Recall的计算方式如下所示：<br>$$<br>P=\frac{TP}{TP+FP}<br>$$<br>$$<br>R=\frac{TP}{TP+FN}<br>$$</p>
+<p>对于多人关键点检测的任务，首先要做的是将检测到的结果<code>dt</code>和<code>gt</code>做匹配（$OKS \gt k$则为一对匹配，每个<code>dt</code>会和<code>OKS</code>最大的相匹配），那么就可能会出现有的<code>dt</code>没有与之相匹配的<code>gt</code>。从代码中可知，COCO中将TP定义为有匹配并且匹配到的不是<code>ignore</code>的<code>gt</code>，FP的定义为没有匹配的<code>gt</code>，$TP+FN$其实就是所有的<code>gt</code>个数（比如标注了100个instance，那么$TP+FN=100$）。</p>
+<p>$OKS=k$下，$AP^{OKS=k}$就是此时采样后的Precision均值。$AP=\frac{1}{10}\sum_{k\in0.5:0.05:0.95}{AP^{OKS=k}}$，$AR$同理。</p>
+<p>关于COCO上各个<span class="exturl" data-url="aHR0cHM6Ly9jb2NvZGF0YXNldC5vcmcvI2tleXBvaW50cy1ldmFs">指标<i class="fa fa-external-link-alt"></i></span>的具体定义可以参考下图：</p>
 <img data-src="/2021/03/01/Pose-Estimation-Metrics/image-20210325204226067.png" class="">
+
 <p><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1pYRl8xOTkxL2FydGljbGUvZGV0YWlscy8xMDQyNzkzODc=">人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客<i class="fa fa-external-link-alt"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8xMDc5ODkxNzM=">目标检测中的mAP是什么含义？ - 知乎<i class="fa fa-external-link-alt"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9qb25hdGhhbi1odWkubWVkaXVtLmNvbS9tYXAtbWVhbi1hdmVyYWdlLXByZWNpc2lvbi1mb3Itb2JqZWN0LWRldGVjdGlvbi00NWMxMjFhMzExNzM=">mAP for Object Detection<i class="fa fa-external-link-alt"></i></span></p>
 
     </div>
 
@@ -368,8 +370,8 @@ R=\frac{TP}{TP+FN}
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/19/C-Interview/" rel="next" title="C++ Interview">
-                  C++ Interview <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/19/Interview-C++/" rel="next" title="Interview">
+                  Interview <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

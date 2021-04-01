@@ -132,7 +132,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-bell fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">14</span></a></li>
         <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-tags fa-fw"></i>分类<span class="badge">10</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
@@ -205,7 +205,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -214,6 +214,10 @@
           
         <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
@@ -261,7 +265,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/19/C-Interview/">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/30/Interview-DB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/logo.svg">
@@ -274,7 +278,217 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/19/C-Interview/" class="post-title-link" itemprop="url">C++ Interview</a>
+          <a href="/2021/03/30/Interview-DB/" class="post-title-link" itemprop="url">Interview-DB</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-30 07:48:05" itemprop="dateCreated datePublished" datetime="2021-03-30T07:48:05+08:00">2021-03-30</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="一级索引二级索引"><a href="#一级索引二级索引" class="headerlink" title="一级索引二级索引"></a>一级索引二级索引</h2><h2 id="稀疏索引稠密索引"><a href="#稀疏索引稠密索引" class="headerlink" title="稀疏索引稠密索引"></a>稀疏索引稠密索引</h2><h2 id="为什么用B-树"><a href="#为什么用B-树" class="headerlink" title="为什么用B+树"></a>为什么用B+树</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/30/Interview-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/30/Interview-Network/" class="post-title-link" itemprop="url">Interview-Network</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-30 07:47:56" itemprop="dateCreated datePublished" datetime="2021-03-30T07:47:56+08:00">2021-03-30</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="TCP建立和断开连接"><a href="#TCP建立和断开连接" class="headerlink" title="TCP建立和断开连接"></a>TCP建立和断开连接</h2><p>三次握手大致过程：</p>
+<p>发起方：发送<code>SYN=1,seq=x</code>，进入<code>SYN_SENT</code></p>
+<p>接收方：回复<code>ACK=1,SYN=1,seq=y,ack=x+1</code>，进入<code>SYN_RECV</code>，<strong>并分配资源</strong></p>
+<p>发起方：回复<code>ACK=1,seq=x+1,ack=y+1</code>,进入<code>ESTABLISHED</code>，<strong>并分配资源</strong></p>
+<p>接收方：收到回复，进入<code>ESTABLISHED</code></p>
+<p>通信信道不可靠，少于三次握手无法保证双方都进入ESTABLISED状态或造成资源的浪费。</p>
+<p>一次握手：包可以丢失或者延迟，发起方不知道接收方有没有接收到链接发起请求以及是否愿意接收数据，接收方也不知道发起方是不是还愿意建立连接。</p>
+<p>两次握手：</p>
+<ol>
+<li>假设ACK包成功发送，但是此时发起方不打算建立连接了，那服务器也不知道，就只能等到超时，造成资源浪费；</li>
+<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。<br>而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
+</ol>
+<p>四次挥手大致过程：</p>
+<p>发起方：发送<code>FIN=1,seq=u，进入</code>FIN_WAIT_1`</p>
+<p>接收方：回复<code>ACK=1,seq=y,ack=u+1</code>，进入<code>CLOSE_WAIT</code></p>
+<p>接收方：回复<code>FIN=1,ACK=1,seq=w,ack=u+1</code>，进入<code>LSAT_ACK</code></p>
+<p>发起方：回复<code>ACK=1,seq=u+1,ack=w+1</code>,进入<code>TIME_WAIT</code></p>
+<p>接收方：收到回复，进入<code>CLOSED</code>，<strong>并释放资源</strong></p>
+<p>发起方：等待<code>2MSL</code>后进入<code>CLOSED</code>，<strong>并释放资源</strong></p>
+<p>本质上和三次握手一样，只是可能还有数据传输，所以需要四次挥手。如果接收方没有数据需要传输，也可以在第二步发送<code>ACK=1,FIN=1,seq=y,ack=u+1</code>，发起方接收到之后就会直接进入<code>TIME_WAIT</code>，就和三次握手一致了。</p>
+<p><code>2MSL</code>保证了发起方和接收方的<code>FIN</code>包或<code>ACK</code>包一定会送达目的地或者再也不会送达。如果发起方不等待直接释放连接，如果最后的<code>ACK</code>丢失，那么接收方就会不断重发，迟迟无法进入<code>CLOSED</code>状态导致资源的浪费；保证链路上该次链接的报文都已经消失；</p>
+<img data-src="/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" class="">
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/30/Interview-OS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/30/Interview-OS/" class="post-title-link" itemprop="url">Interview_OS</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-30 07:47:36" itemprop="dateCreated datePublished" datetime="2021-03-30T07:47:36+08:00">2021-03-30</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2021/03/19/Interview-C++/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.svg">
+      <meta itemprop="name" content="Anderson Zhang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anderson's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/19/Interview-C++/" class="post-title-link" itemprop="url">Interview</a>
         </h2>
 
         <div class="post-meta-container">
@@ -307,10 +521,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>C++基础知识和面试题</p>
+          <p>基础知识和面试题</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2021/03/19/C-Interview/">
+              <a class="btn" href="/2021/03/19/Interview-C++/">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -795,246 +1009,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/07/15/Multi-Frame-Pose-Estimation/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/07/15/Pose-Estimation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.svg">
-      <meta itemprop="name" content="Anderson Zhang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anderson's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/07/15/Pose-Estimation/" class="post-title-link" itemprop="url">Pose-Estimation 论文</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-07-15 09:57:29" itemprop="dateCreated datePublished" datetime="2020-07-15T09:57:29+08:00">2020-07-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Pose-Estimation/" itemprop="url" rel="index"><span itemprop="name">Pose Estimation</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>姿态检测论文笔记</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/15/Pose-Estimation/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2020/02/11/SVM-gradient/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.svg">
-      <meta itemprop="name" content="Anderson Zhang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anderson's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/02/11/SVM-gradient/" class="post-title-link" itemprop="url">SVM 梯度</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-02-11 12:13:54" itemprop="dateCreated datePublished" datetime="2020-02-11T12:13:54+08:00">2020-02-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/cs231n/" itemprop="url" rel="index"><span itemprop="name">cs231n</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>SVM梯度计算</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/02/11/SVM-gradient/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://andersonzhangyq.github.io/2018/12/04/Max-Ent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.svg">
-      <meta itemprop="name" content="Anderson Zhang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Anderson's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2018/12/04/Max-Ent/" class="post-title-link" itemprop="url">最大熵模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2018-12-04 09:46:18" itemprop="dateCreated datePublished" datetime="2018-12-04T09:46:18+08:00">2018-12-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>最大熵模型介绍和推导</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/12/04/Max-Ent/">
                 阅读全文 &raquo;
               </a>
             </div>
