@@ -546,15 +546,19 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
   <entry>
     <title>Interview</title>
     <url>/2021/03/19/Interview-C++/</url>
-    <content><![CDATA[<h1 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h1><h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p><code>Constant object can only call const member function</code></p>
+    <content><![CDATA[<h1 id="c">C++</h1>
+<h2 id="const">const</h2>
+<p><code>Constant object can only call const member function</code></p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    A() &#123; &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// const可用于对重载函数的区分</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;a&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;b&quot;</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> A a;</span><br><span class="line">    a.getValue(); <span class="comment">// output: b</span></span><br><span class="line">    A b;</span><br><span class="line">    b.getValue(); <span class="comment">// output: a</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="inline"><a href="#inline" class="headerlink" title="inline"></a>inline</h2><p>是否内联，程序员不可控。内联函数只是对编译器的<strong>建议</strong>，是否对函数内联，决定权在于编译器。</p>
+<p>从右到左读（或者就近原则）</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> x;              <span class="comment">// x is an int constant</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> * p = &amp;x;       <span class="comment">// p is a pointer to int constant</span></span><br><span class="line"><span class="keyword">int</span> * <span class="keyword">const</span> p = &amp;x;       <span class="comment">// p is a constant pointer to int</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> <span class="keyword">const</span> * p = &amp;x; <span class="comment">// p is a constant pointer to int constant</span></span><br></pre></td></tr></table></figure>
+<h2 id="inline">inline</h2>
+<p>是否内联，程序员不可控。内联函数只是对编译器的<strong>建议</strong>，是否对函数内联，决定权在于编译器。</p>
 <p>虚函数也可以是内联函数</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;  </span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">who</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;I am Base\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~Base() &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">who</span><span class="params">()</span>  <span class="comment">// 不写inline时隐式内联</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;I am Derived\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 此处的虚函数 who()，是通过类（Base）的具体对象（b）来调用的，编译期间就能确定了，所以它可以是内联的，但最终是否内联取决于编译器。 </span></span><br><span class="line">    Base b;</span><br><span class="line">    b.who();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 此处的虚函数是通过指针调用的，呈现多态性，需要在运行时期间才能确定，所以不能为内联。  </span></span><br><span class="line">    Base *ptr = <span class="keyword">new</span> Derived();</span><br><span class="line">    ptr-&gt;who();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h2 id="C-内存分配"><a href="#C-内存分配" class="headerlink" title="C++ 内存分配"></a>C++ 内存分配</h2><p>通常一个由 C/C++ 编译的程序占用的内存分为以下 5 个部分:</p>
-<ol>
+<h2 id="c-内存分配">C++ 内存分配</h2>
+<p>通常一个由 C/C++ 编译的程序占用的内存分为以下 5 个部分:</p>
+<ol type="1">
 <li>栈区（stack）: 由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。</li>
 <li>堆区（heap）: 一般由程序员分配释放，若程序员不释放，程序结束时可能由OS回收。注意它与数据结构中的堆是两回事，分配方式倒是类似于链表。</li>
 <li>全局区（静态区）（static）: 全局变量和静态变量的存储是放在一块的，初始化的全局变量和静态变量在一块区域，未初始化的全局变量和未初始化的静态变量在相邻的另一块区域。程序结束后由系统释放。</li>
@@ -562,15 +566,17 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
 <li>程序代码区: 存放函数体的二进制代码。</li>
 </ol>
 <p><span class="exturl" data-url="aHR0cDovL3doYXRiZWcuY29tLzIwMTkvMDQvMTYvY3BwbWVtb3J5Lmh0bWw=">漫谈C++内存分配与管理<i class="fa fa-external-link-alt"></i></span></p>
-<h2 id="C-中堆和栈的区别"><a href="#C-中堆和栈的区别" class="headerlink" title="C++中堆和栈的区别"></a>C++中堆和栈的区别</h2><p>管理方面，需要自己分配/清除<br>空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M<br>碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会<br>生长方向：栈往低地址生长，堆往高地址生长<br>分配方式：栈可动态分配也可静态分配，堆只能动态分配<br>分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</p>
+<h2 id="c中堆和栈的区别">C++中堆和栈的区别</h2>
+<p>管理方面，需要自己分配/清除 空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M 碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会 生长方向：栈往低地址生长，堆往高地址生长 分配方式：栈可动态分配也可静态分配，堆只能动态分配 分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</p>
 <p>栈其实要比堆快，原因在于：</p>
-<ol>
+<ol type="1">
 <li>栈是本着LIFO原则的存储机制, 对栈数据的定位相对比较快速, 而堆则是随机分配的空间, 处理的数据比较多, 无论如何, 至少要两次定位.</li>
 <li>栈是由CPU提供指令支持的, 在指令的处理速度上, 对栈数据进行处理的速度自然要优于由操作系统支持的堆数据.</li>
 <li>栈是在一级缓存中做缓存的, 而堆则是在二级缓存中, 两者在硬件性能上差异巨大.</li>
 <li>各语言对栈的优化支持要优于对堆的支持, 比如swift语言中, 三个字及以内的struct结构, 可以在栈中内联, 从而达到更快的处理速度.</li>
 </ol>
-<h2 id="内存池-STL"><a href="#内存池-STL" class="headerlink" title="内存池 STL"></a>内存池 STL</h2>]]></content>
+<h2 id="内存池-stl">内存池 STL</h2>
+]]></content>
       <categories>
         <category>C++</category>
       </categories>
@@ -619,5 +625,19 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
       <tags>
         <tag>操作系统</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Noise2Noise</title>
+    <url>/2021/04/01/Noise2Noise/</url>
+    <content><![CDATA[<h2 id="理论背景">理论背景</h2>
+<p>如果有一组不可靠的观测<span class="math inline">\(x=\{x_1,x_2,x_3, \cdots, x_n\}\)</span>，如何去预测真实值<span class="math inline">\(z\)</span>呢？上述预测问题可以转化为一个优化问题，定义一个合适的指标<span class="math inline">\(M\)</span>，那么 <span class="math display">\[
+z = \arg\min_z E_y\{M(z,x_i)\}
+\]</span> 比如线性回归的话，<span class="math inline">\(M\)</span>就是平方差函数。</p>
+<p>推广一下，把深度学习模型表示为函数<span class="math inline">\(f_{\theta}\)</span>，模型的损失函数为<span class="math inline">\(L\)</span>，训练集可表示为<span class="math inline">\(\{(x_1, y_1), \cdots, (x_n, y_n)\}\)</span>，其中<span class="math inline">\(y_i\)</span>表示gt，那么 <span class="math display">\[
+\theta = \arg\min_{\theta}E_{(x,y)}(L(f_{\theta}(x), y))
+\]</span> 那有没有可能去掉这个y？数学上可以表示为 <span class="math display">\[
+\theta = \arg\min_{\theta}E_x(E_{y|x}(L(f_{\theta}(x), y)))
+\]</span></p>
+]]></content>
   </entry>
 </search>
