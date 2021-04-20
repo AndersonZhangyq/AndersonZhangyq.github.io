@@ -374,7 +374,16 @@ z = \arg\min_z E_y\{M(z,x_i)\}
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="一级索引二级索引"><a href="#一级索引二级索引" class="headerlink" title="一级索引二级索引"></a>一级索引二级索引</h2><h2 id="稀疏索引稠密索引"><a href="#稀疏索引稠密索引" class="headerlink" title="稀疏索引稠密索引"></a>稀疏索引稠密索引</h2><h2 id="为什么用B-树"><a href="#为什么用B-树" class="headerlink" title="为什么用B+树"></a>为什么用B+树</h2>
+          <h2 id="索引类型">索引类型</h2>
+<h3 id="ordered-index">Ordered Index</h3>
+<h4 id="primary-index-clustering-index-和-secondary-index-non-clustering-index">Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index )</h4>
+<p>聚集索引：物理存储顺序和索引顺序相同，或者称主索引。降低插入删除性能，因为涉及到数据移动。 非聚集索引：物理存储顺序和索引顺序不一定相同。必须是稠密索引。 #### 稠密索引 (Dense Index) 和 稀疏索引 (Sparse Index) 稠密索引：每个搜索码对应一个数据记录 稀疏索引：只有部分搜索码直接对应一个数据记录。比如将搜索码排序后分组，只记录每个组的最小搜索码，查找是找到比查询值小的最大搜索码，然后顺序查找找到对应数据记录。</p>
+<h2 id="为什么用bb树做索引">为什么用B+/B树做索引</h2>
+<ol type="1">
+<li>多叉vs二叉：首先普通的搜索树肯定不行，会退化为链表，所以要用平衡的搜索树。那么常用的红黑树是二叉树，对于给定n个值，树的高度由<code>order</code>（叉数）决定，记<span class="math inline">\(k=order\)</span>，那么树的高度<span class="math inline">\(h=\log_{k}n\)</span>。显然，多叉树的高度远小于二叉树。</li>
+<li>B+树 vs B树：B树的数据可以存储在叶子节点和非叶子节点，而B+树的数据一定存在叶子节点，这种设计使得B+树可以很方便地将数据顺序连接起来。B树确实提高了IO性能（把树节点载入到内存中，这些树节点按顺序放在磁盘中，每次顺序读取，减少寻道次数和读取次数），到那时不能顺序访问，所以提出了B+树来解决这个问题。</li>
+</ol>
+
       
     </div>
 
@@ -437,7 +446,8 @@ z = \arg\min_z E_y\{M(z,x_i)\}
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="TCP建立和断开连接"><a href="#TCP建立和断开连接" class="headerlink" title="TCP建立和断开连接"></a>TCP建立和断开连接</h2><p>三次握手大致过程：</p>
+          <h2 id="tcp建立和断开连接">TCP建立和断开连接</h2>
+<p>三次握手大致过程：</p>
 <p>发起方：发送<code>SYN=1,seq=x</code>，进入<code>SYN_SENT</code></p>
 <p>接收方：回复<code>ACK=1,SYN=1,seq=y,ack=x+1</code>，进入<code>SYN_RECV</code>，<strong>并分配资源</strong></p>
 <p>发起方：回复<code>ACK=1,seq=x+1,ack=y+1</code>,进入<code>ESTABLISHED</code>，<strong>并分配资源</strong></p>
@@ -445,9 +455,9 @@ z = \arg\min_z E_y\{M(z,x_i)\}
 <p>通信信道不可靠，少于三次握手无法保证双方都进入ESTABLISED状态或造成资源的浪费。</p>
 <p>一次握手：包可以丢失或者延迟，发起方不知道接收方有没有接收到链接发起请求以及是否愿意接收数据，接收方也不知道发起方是不是还愿意建立连接。</p>
 <p>两次握手：</p>
-<ol>
+<ol type="1">
 <li>假设ACK包成功发送，但是此时发起方不打算建立连接了，那服务器也不知道，就只能等到超时，造成资源浪费；</li>
-<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。<br>而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
+<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。 而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
 </ol>
 <p>四次挥手大致过程：</p>
 <p>发起方：发送<code>FIN=1,seq=u，进入</code>FIN_WAIT_1`</p>
@@ -459,6 +469,13 @@ z = \arg\min_z E_y\{M(z,x_i)\}
 <p>本质上和三次握手一样，只是可能还有数据传输，所以需要四次挥手。如果接收方没有数据需要传输，也可以在第二步发送<code>ACK=1,FIN=1,seq=y,ack=u+1</code>，发起方接收到之后就会直接进入<code>TIME_WAIT</code>，就和三次握手一致了。</p>
 <p><code>2MSL</code>保证了发起方和接收方的<code>FIN</code>包或<code>ACK</code>包一定会送达目的地或者再也不会送达。如果发起方不等待直接释放连接，如果最后的<code>ACK</code>丢失，那么接收方就会不断重发，迟迟无法进入<code>CLOSED</code>状态导致资源的浪费；保证链路上该次链接的报文都已经消失；</p>
 <img data-src="/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" class="">
+<h2 id="tcp-性质">TCP 性质</h2>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5jeWMyMDE4Lnh5ei8lRTglQUUlQTElRTclQUUlOTclRTYlOUMlQkElRTUlOUYlQkElRTclQTElODAvJUU3JUJEJTkxJUU3JUJCJTlDJUU1JTlGJUJBJUU3JUExJTgwLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5QyUyMC0lMjAlRTQlQkMlQTAlRTglQkUlOTMlRTUlQjElODIuaHRtbCNfMi0lRTUlQkYlQUIlRTklODclOEQlRTQlQkMlQTAlRTQlQjglOEUlRTUlQkYlQUIlRTYlODElQTIlRTUlQTQlOEQ=">计算机网络 - 传输层<i class="fa fa-external-link-alt"></i></span></p>
+<p>可靠性：TCP超时重传，超过时限没收到确认，那么重传该数据包。</p>
+<p>滑动窗口：发送方和接受方各有一个相同大小的窗口，接收方不需要对窗口中每一个数据包确认，只需要确认窗口中最后一个按需到达的数据包。发送方收到接收方确认后就可以将窗口向右滑动，继续发送窗口内未发送的数据，根据接收方的确认选择是否重发窗口中数据包，窗口大小可以动态调整。</p>
+<p>流量控制：</p>
+<p>拥塞控制：</p>
+
       
     </div>
 

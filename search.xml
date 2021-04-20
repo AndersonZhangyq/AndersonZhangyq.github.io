@@ -561,13 +561,20 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
 <ol type="1">
 <li>栈区（stack）: 由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。</li>
 <li>堆区（heap）: 一般由程序员分配释放，若程序员不释放，程序结束时可能由OS回收。注意它与数据结构中的堆是两回事，分配方式倒是类似于链表。</li>
-<li>全局区（静态区）（static）: 全局变量和静态变量的存储是放在一块的，初始化的全局变量和静态变量在一块区域，未初始化的全局变量和未初始化的静态变量在相邻的另一块区域。程序结束后由系统释放。</li>
+<li>全局区（静态区）（static）: 全局变量和静态变量的存储是放在一块的，初始化的全局变量和静态变量在<code>.data</code>，未初始化的全局变量和未初始化的静态变量在<code>.bss</code>。程序结束后由系统释放。</li>
 <li>文字常量区: 常量字符串等只读数据放在这里的。程序结束后由系统释放。</li>
 <li>程序代码区: 存放函数体的二进制代码。</li>
 </ol>
 <p><span class="exturl" data-url="aHR0cDovL3doYXRiZWcuY29tLzIwMTkvMDQvMTYvY3BwbWVtb3J5Lmh0bWw=">漫谈C++内存分配与管理<i class="fa fa-external-link-alt"></i></span></p>
 <h2 id="c中堆和栈的区别">C++中堆和栈的区别</h2>
-<p>管理方面，需要自己分配/清除 空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M 碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会 生长方向：栈往低地址生长，堆往高地址生长 分配方式：栈可动态分配也可静态分配，堆只能动态分配 分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</p>
+<ul>
+<li>管理方面，需要自己分配/清除</li>
+<li>空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M</li>
+<li>碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会</li>
+<li>生长方向：栈往低地址生长，堆往高地址生长</li>
+<li>分配方式：栈可动态分配也可静态分配，堆只能动态分配</li>
+<li>分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</li>
+</ul>
 <p>栈其实要比堆快，原因在于：</p>
 <ol type="1">
 <li>栈是本着LIFO原则的存储机制, 对栈数据的定位相对比较快速, 而堆则是随机分配的空间, 处理的数据比较多, 无论如何, 至少要两次定位.</li>
@@ -576,6 +583,16 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
 <li>各语言对栈的优化支持要优于对堆的支持, 比如swift语言中, 三个字及以内的struct结构, 可以在栈中内联, 从而达到更快的处理速度.</li>
 </ol>
 <h2 id="内存池-stl">内存池 STL</h2>
+<p>STL分配内存有两级，如果分配大小小于阈值（128KB），那么从内存池分配，如果大于128KB，那么直接问操作系统要。</p>
+<p>内存池简单来说，就是先向操作系统申请一块<code>unit_size x unit_num</code>的空间，然后用一定数据结构组织一下，每块空间内部用双向链表 将每个单元 连接起来，方便管理空闲空间。如果一快用完了就在申请一块。</p>
+<p><code>unit_size</code>不断递增，比如 [8,16,32,64,128]，用一个数组把他们组织起来。</p>
+<h2 id="虚继承">虚继承</h2>
+<p>为了<strong>减少</strong>多继承时的命名冲突和冗余数据问题，C++提出了虚继承，使得派生类中只保留一份间接基类。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//间接基类A</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_a;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//直接基类B</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A&#123;  <span class="comment">//虚继承</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_b;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//直接基类C</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A&#123;  <span class="comment">//虚继承</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_c;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//派生类D</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span>:</span> <span class="keyword">public</span> B, <span class="keyword">public</span> C&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">seta</span><span class="params">(<span class="keyword">int</span> a)</span></span>&#123; m_a = a; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setb</span><span class="params">(<span class="keyword">int</span> b)</span></span>&#123; m_b = b; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setc</span><span class="params">(<span class="keyword">int</span> c)</span></span>&#123; m_c = c; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setd</span><span class="params">(<span class="keyword">int</span> d)</span></span>&#123; m_d = d; &#125;  <span class="comment">//正确</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_d;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    D d;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol type="1">
+<li>虚继承必须在使用前就声明（例如写成<code>class D: virtual public B, virtual public C</code>是没有效果的），因为需要知道要创造几个基类，必须先声明自己的基类是否可以共享才行。</li>
+<li>即使有虚继承，还是会出现混乱。比如B和C中都定义了int c，那么在派生类中直接访问c是无法访问的，无法确定应该使用哪个基类的c。</li>
+</ol>
 ]]></content>
       <categories>
         <category>C++</category>
@@ -584,7 +601,8 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
   <entry>
     <title>Interview-Network</title>
     <url>/2021/03/30/Interview-Network/</url>
-    <content><![CDATA[<h2 id="TCP建立和断开连接"><a href="#TCP建立和断开连接" class="headerlink" title="TCP建立和断开连接"></a>TCP建立和断开连接</h2><p>三次握手大致过程：</p>
+    <content><![CDATA[<h2 id="tcp建立和断开连接">TCP建立和断开连接</h2>
+<p>三次握手大致过程：</p>
 <p>发起方：发送<code>SYN=1,seq=x</code>，进入<code>SYN_SENT</code></p>
 <p>接收方：回复<code>ACK=1,SYN=1,seq=y,ack=x+1</code>，进入<code>SYN_RECV</code>，<strong>并分配资源</strong></p>
 <p>发起方：回复<code>ACK=1,seq=x+1,ack=y+1</code>,进入<code>ESTABLISHED</code>，<strong>并分配资源</strong></p>
@@ -592,9 +610,9 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
 <p>通信信道不可靠，少于三次握手无法保证双方都进入ESTABLISED状态或造成资源的浪费。</p>
 <p>一次握手：包可以丢失或者延迟，发起方不知道接收方有没有接收到链接发起请求以及是否愿意接收数据，接收方也不知道发起方是不是还愿意建立连接。</p>
 <p>两次握手：</p>
-<ol>
+<ol type="1">
 <li>假设ACK包成功发送，但是此时发起方不打算建立连接了，那服务器也不知道，就只能等到超时，造成资源浪费；</li>
-<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。<br>而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
+<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。 而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
 </ol>
 <p>四次挥手大致过程：</p>
 <p>发起方：发送<code>FIN=1,seq=u，进入</code>FIN_WAIT_1`</p>
@@ -605,7 +623,14 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
 <p>发起方：等待<code>2MSL</code>后进入<code>CLOSED</code>，<strong>并释放资源</strong></p>
 <p>本质上和三次握手一样，只是可能还有数据传输，所以需要四次挥手。如果接收方没有数据需要传输，也可以在第二步发送<code>ACK=1,FIN=1,seq=y,ack=u+1</code>，发起方接收到之后就会直接进入<code>TIME_WAIT</code>，就和三次握手一致了。</p>
 <p><code>2MSL</code>保证了发起方和接收方的<code>FIN</code>包或<code>ACK</code>包一定会送达目的地或者再也不会送达。如果发起方不等待直接释放连接，如果最后的<code>ACK</code>丢失，那么接收方就会不断重发，迟迟无法进入<code>CLOSED</code>状态导致资源的浪费；保证链路上该次链接的报文都已经消失；</p>
-<img data-src="/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" class="">]]></content>
+<img data-src="/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" class="">
+<h2 id="tcp-性质">TCP 性质</h2>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5jeWMyMDE4Lnh5ei8lRTglQUUlQTElRTclQUUlOTclRTYlOUMlQkElRTUlOUYlQkElRTclQTElODAvJUU3JUJEJTkxJUU3JUJCJTlDJUU1JTlGJUJBJUU3JUExJTgwLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5QyUyMC0lMjAlRTQlQkMlQTAlRTglQkUlOTMlRTUlQjElODIuaHRtbCNfMi0lRTUlQkYlQUIlRTklODclOEQlRTQlQkMlQTAlRTQlQjglOEUlRTUlQkYlQUIlRTYlODElQTIlRTUlQTQlOEQ=">计算机网络 - 传输层<i class="fa fa-external-link-alt"></i></span></p>
+<p>可靠性：TCP超时重传，超过时限没收到确认，那么重传该数据包。</p>
+<p>滑动窗口：发送方和接受方各有一个相同大小的窗口，接收方不需要对窗口中每一个数据包确认，只需要确认窗口中最后一个按需到达的数据包。发送方收到接收方确认后就可以将窗口向右滑动，继续发送窗口内未发送的数据，根据接收方的确认选择是否重发窗口中数据包，窗口大小可以动态调整。</p>
+<p>流量控制：</p>
+<p>拥塞控制：</p>
+]]></content>
       <tags>
         <tag>计算机网络</tag>
       </tags>
@@ -613,7 +638,16 @@ x_i^p(V)&amp;=\sum_{n=1}^{N}{\overline{x}^s(n)x_i^c(n)}
   <entry>
     <title>Interview-DB</title>
     <url>/2021/03/30/Interview-DB/</url>
-    <content><![CDATA[<h2 id="一级索引二级索引"><a href="#一级索引二级索引" class="headerlink" title="一级索引二级索引"></a>一级索引二级索引</h2><h2 id="稀疏索引稠密索引"><a href="#稀疏索引稠密索引" class="headerlink" title="稀疏索引稠密索引"></a>稀疏索引稠密索引</h2><h2 id="为什么用B-树"><a href="#为什么用B-树" class="headerlink" title="为什么用B+树"></a>为什么用B+树</h2>]]></content>
+    <content><![CDATA[<h2 id="索引类型">索引类型</h2>
+<h3 id="ordered-index">Ordered Index</h3>
+<h4 id="primary-index-clustering-index-和-secondary-index-non-clustering-index">Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index )</h4>
+<p>聚集索引：物理存储顺序和索引顺序相同，或者称主索引。降低插入删除性能，因为涉及到数据移动。 非聚集索引：物理存储顺序和索引顺序不一定相同。必须是稠密索引。 #### 稠密索引 (Dense Index) 和 稀疏索引 (Sparse Index) 稠密索引：每个搜索码对应一个数据记录 稀疏索引：只有部分搜索码直接对应一个数据记录。比如将搜索码排序后分组，只记录每个组的最小搜索码，查找是找到比查询值小的最大搜索码，然后顺序查找找到对应数据记录。</p>
+<h2 id="为什么用bb树做索引">为什么用B+/B树做索引</h2>
+<ol type="1">
+<li>多叉vs二叉：首先普通的搜索树肯定不行，会退化为链表，所以要用平衡的搜索树。那么常用的红黑树是二叉树，对于给定n个值，树的高度由<code>order</code>（叉数）决定，记<span class="math inline">\(k=order\)</span>，那么树的高度<span class="math inline">\(h=\log_{k}n\)</span>。显然，多叉树的高度远小于二叉树。</li>
+<li>B+树 vs B树：B树的数据可以存储在叶子节点和非叶子节点，而B+树的数据一定存在叶子节点，这种设计使得B+树可以很方便地将数据顺序连接起来。B树确实提高了IO性能（把树节点载入到内存中，这些树节点按顺序放在磁盘中，每次顺序读取，减少寻道次数和读取次数），到那时不能顺序访问，所以提出了B+树来解决这个问题。</li>
+</ol>
+]]></content>
       <tags>
         <tag>数据库</tag>
       </tags>

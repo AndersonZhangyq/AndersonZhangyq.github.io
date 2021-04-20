@@ -32,7 +32,7 @@
 <meta property="og:description" content="基础知识和面试题">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-03-19T01:41:57.000Z">
-<meta property="article:modified_time" content="2021-04-05T02:25:43.273Z">
+<meta property="article:modified_time" content="2021-04-05T03:49:22.233Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta name="twitter:card" content="summary">
 
@@ -194,7 +194,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#c"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">1.1.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inline"><span class="nav-number">1.2.</span> <span class="nav-text">inline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 内存分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c%E4%B8%AD%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.4.</span> <span class="nav-text">C++中堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B1%A0-stl"><span class="nav-number">1.5.</span> <span class="nav-text">内存池 STL</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#c"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">1.1.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inline"><span class="nav-number">1.2.</span> <span class="nav-text">inline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 内存分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c%E4%B8%AD%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.4.</span> <span class="nav-text">C++中堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B1%A0-stl"><span class="nav-number">1.5.</span> <span class="nav-text">内存池 STL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="nav-number">1.6.</span> <span class="nav-text">虚继承</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -333,13 +333,20 @@
 <ol type="1">
 <li>栈区（stack）: 由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。</li>
 <li>堆区（heap）: 一般由程序员分配释放，若程序员不释放，程序结束时可能由OS回收。注意它与数据结构中的堆是两回事，分配方式倒是类似于链表。</li>
-<li>全局区（静态区）（static）: 全局变量和静态变量的存储是放在一块的，初始化的全局变量和静态变量在一块区域，未初始化的全局变量和未初始化的静态变量在相邻的另一块区域。程序结束后由系统释放。</li>
+<li>全局区（静态区）（static）: 全局变量和静态变量的存储是放在一块的，初始化的全局变量和静态变量在<code>.data</code>，未初始化的全局变量和未初始化的静态变量在<code>.bss</code>。程序结束后由系统释放。</li>
 <li>文字常量区: 常量字符串等只读数据放在这里的。程序结束后由系统释放。</li>
 <li>程序代码区: 存放函数体的二进制代码。</li>
 </ol>
 <p><span class="exturl" data-url="aHR0cDovL3doYXRiZWcuY29tLzIwMTkvMDQvMTYvY3BwbWVtb3J5Lmh0bWw=">漫谈C++内存分配与管理<i class="fa fa-external-link-alt"></i></span></p>
 <h2 id="c中堆和栈的区别">C++中堆和栈的区别</h2>
-<p>管理方面，需要自己分配/清除 空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M 碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会 生长方向：栈往低地址生长，堆往高地址生长 分配方式：栈可动态分配也可静态分配，堆只能动态分配 分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</p>
+<ul>
+<li>管理方面，需要自己分配/清除</li>
+<li>空间大小方面，堆最大可达4G（32位），而栈大小有限制，一般8M</li>
+<li>碎片方面：堆分配和回收一段时间后可能产生碎片，栈一定不会</li>
+<li>生长方向：栈往低地址生长，堆往高地址生长</li>
+<li>分配方式：栈可动态分配也可静态分配，堆只能动态分配</li>
+<li>分配效率：栈是机器系统提供的数据结构，而堆是语言层提供的数据结构，效率不一样</li>
+</ul>
 <p>栈其实要比堆快，原因在于：</p>
 <ol type="1">
 <li>栈是本着LIFO原则的存储机制, 对栈数据的定位相对比较快速, 而堆则是随机分配的空间, 处理的数据比较多, 无论如何, 至少要两次定位.</li>
@@ -348,6 +355,16 @@
 <li>各语言对栈的优化支持要优于对堆的支持, 比如swift语言中, 三个字及以内的struct结构, 可以在栈中内联, 从而达到更快的处理速度.</li>
 </ol>
 <h2 id="内存池-stl">内存池 STL</h2>
+<p>STL分配内存有两级，如果分配大小小于阈值（128KB），那么从内存池分配，如果大于128KB，那么直接问操作系统要。</p>
+<p>内存池简单来说，就是先向操作系统申请一块<code>unit_size x unit_num</code>的空间，然后用一定数据结构组织一下，每块空间内部用双向链表 将每个单元 连接起来，方便管理空闲空间。如果一快用完了就在申请一块。</p>
+<p><code>unit_size</code>不断递增，比如 [8,16,32,64,128]，用一个数组把他们组织起来。</p>
+<h2 id="虚继承">虚继承</h2>
+<p>为了<strong>减少</strong>多继承时的命名冲突和冗余数据问题，C++提出了虚继承，使得派生类中只保留一份间接基类。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//间接基类A</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_a;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//直接基类B</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span>:</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A&#123;  <span class="comment">//虚继承</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_b;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//直接基类C</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A&#123;  <span class="comment">//虚继承</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">int</span> m_c;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//派生类D</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span>:</span> <span class="keyword">public</span> B, <span class="keyword">public</span> C&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">seta</span><span class="params">(<span class="keyword">int</span> a)</span></span>&#123; m_a = a; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setb</span><span class="params">(<span class="keyword">int</span> b)</span></span>&#123; m_b = b; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setc</span><span class="params">(<span class="keyword">int</span> c)</span></span>&#123; m_c = c; &#125;  <span class="comment">//正确</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setd</span><span class="params">(<span class="keyword">int</span> d)</span></span>&#123; m_d = d; &#125;  <span class="comment">//正确</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> m_d;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    D d;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol type="1">
+<li>虚继承必须在使用前就声明（例如写成<code>class D: virtual public B, virtual public C</code>是没有效果的），因为需要知道要创造几个基类，必须先声明自己的基类是否可以共享才行。</li>
+<li>即使有虚继承，还是会出现混乱。比如B和C中都定义了int c，那么在派生类中直接访问c是无法访问的，无法确定应该使用哪个基类的c。</li>
+</ol>
 
     </div>
 

@@ -24,16 +24,16 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="TCP建立和断开连接三次握手大致过程： 发起方：发送SYN&#x3D;1,seq&#x3D;x，进入SYN_SENT 接收方：回复ACK&#x3D;1,SYN&#x3D;1,seq&#x3D;y,ack&#x3D;x+1，进入SYN_RECV，并分配资源 发起方：回复ACK&#x3D;1,seq&#x3D;x+1,ack&#x3D;y+1,进入ESTABLISHED，并分配资源 接收方：收到回复，进入ESTABLISHED 通信信道不可靠，少于三次握手无法保证双方都进入ESTABLIS">
+<meta name="description" content="TCP建立和断开连接 三次握手大致过程： 发起方：发送SYN&#x3D;1,seq&#x3D;x，进入SYN_SENT 接收方：回复ACK&#x3D;1,SYN&#x3D;1,seq&#x3D;y,ack&#x3D;x+1，进入SYN_RECV，并分配资源 发起方：回复ACK&#x3D;1,seq&#x3D;x+1,ack&#x3D;y+1,进入ESTABLISHED，并分配资源 接收方：收到回复，进入ESTABLISHED 通信信道不可靠，少于三次握手无法保证双方都进入E">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Interview-Network">
 <meta property="og:url" content="https://andersonzhangyq.github.io/2021/03/30/Interview-Network/index.html">
 <meta property="og:site_name" content="Anderson&#39;s Blog">
-<meta property="og:description" content="TCP建立和断开连接三次握手大致过程： 发起方：发送SYN&#x3D;1,seq&#x3D;x，进入SYN_SENT 接收方：回复ACK&#x3D;1,SYN&#x3D;1,seq&#x3D;y,ack&#x3D;x+1，进入SYN_RECV，并分配资源 发起方：回复ACK&#x3D;1,seq&#x3D;x+1,ack&#x3D;y+1,进入ESTABLISHED，并分配资源 接收方：收到回复，进入ESTABLISHED 通信信道不可靠，少于三次握手无法保证双方都进入ESTABLIS">
+<meta property="og:description" content="TCP建立和断开连接 三次握手大致过程： 发起方：发送SYN&#x3D;1,seq&#x3D;x，进入SYN_SENT 接收方：回复ACK&#x3D;1,SYN&#x3D;1,seq&#x3D;y,ack&#x3D;x+1，进入SYN_RECV，并分配资源 发起方：回复ACK&#x3D;1,seq&#x3D;x+1,ack&#x3D;y+1,进入ESTABLISHED，并分配资源 接收方：收到回复，进入ESTABLISHED 通信信道不可靠，少于三次握手无法保证双方都进入E">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://andersonzhangyq.github.io/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png">
 <meta property="article:published_time" content="2021-03-29T23:47:56.000Z">
-<meta property="article:modified_time" content="2021-03-30T10:10:39.010Z">
+<meta property="article:modified_time" content="2021-04-05T05:11:23.150Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
@@ -197,7 +197,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP%E5%BB%BA%E7%AB%8B%E5%92%8C%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">TCP建立和断开连接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp%E5%BB%BA%E7%AB%8B%E5%92%8C%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">TCP建立和断开连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-%E6%80%A7%E8%B4%A8"><span class="nav-number">2.</span> <span class="nav-text">TCP 性质</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -311,7 +311,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="TCP建立和断开连接"><a href="#TCP建立和断开连接" class="headerlink" title="TCP建立和断开连接"></a>TCP建立和断开连接</h2><p>三次握手大致过程：</p>
+        <h2 id="tcp建立和断开连接">TCP建立和断开连接</h2>
+<p>三次握手大致过程：</p>
 <p>发起方：发送<code>SYN=1,seq=x</code>，进入<code>SYN_SENT</code></p>
 <p>接收方：回复<code>ACK=1,SYN=1,seq=y,ack=x+1</code>，进入<code>SYN_RECV</code>，<strong>并分配资源</strong></p>
 <p>发起方：回复<code>ACK=1,seq=x+1,ack=y+1</code>,进入<code>ESTABLISHED</code>，<strong>并分配资源</strong></p>
@@ -319,9 +320,9 @@
 <p>通信信道不可靠，少于三次握手无法保证双方都进入ESTABLISED状态或造成资源的浪费。</p>
 <p>一次握手：包可以丢失或者延迟，发起方不知道接收方有没有接收到链接发起请求以及是否愿意接收数据，接收方也不知道发起方是不是还愿意建立连接。</p>
 <p>两次握手：</p>
-<ol>
+<ol type="1">
 <li>假设ACK包成功发送，但是此时发起方不打算建立连接了，那服务器也不知道，就只能等到超时，造成资源浪费；</li>
-<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。<br>而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
+<li>可能因为已失效的数据包产生错误。例如，发起方第一次发送的SYN没有及时到达接收方，超时重发的第二个SYN到达了接收方，接收方回复ACK，发起方接收到之后双方链接建立，这时第一个SYN到达接收方，接收方又回复ACK，认为和发起方建立了新的链接，然而此时发起方并没有建立连接的意愿，所以不予理会，但是接收方不知道，只能耗费大量资源等待。这个链接并不是发起方主动想要建立的，是因为通信延迟意外出现的。 而如果有第三次，那么此时发起方不会回复SYN，接收方得不到响应，超时后就关闭连接释放资源了。</li>
 </ol>
 <p>四次挥手大致过程：</p>
 <p>发起方：发送<code>FIN=1,seq=u，进入</code>FIN_WAIT_1`</p>
@@ -333,6 +334,13 @@
 <p>本质上和三次握手一样，只是可能还有数据传输，所以需要四次挥手。如果接收方没有数据需要传输，也可以在第二步发送<code>ACK=1,FIN=1,seq=y,ack=u+1</code>，发起方接收到之后就会直接进入<code>TIME_WAIT</code>，就和三次握手一致了。</p>
 <p><code>2MSL</code>保证了发起方和接收方的<code>FIN</code>包或<code>ACK</code>包一定会送达目的地或者再也不会送达。如果发起方不等待直接释放连接，如果最后的<code>ACK</code>丢失，那么接收方就会不断重发，迟迟无法进入<code>CLOSED</code>状态导致资源的浪费；保证链路上该次链接的报文都已经消失；</p>
 <img data-src="/2021/03/30/Interview-Network/TCP%E7%9A%84%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" class="">
+<h2 id="tcp-性质">TCP 性质</h2>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5jeWMyMDE4Lnh5ei8lRTglQUUlQTElRTclQUUlOTclRTYlOUMlQkElRTUlOUYlQkElRTclQTElODAvJUU3JUJEJTkxJUU3JUJCJTlDJUU1JTlGJUJBJUU3JUExJTgwLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5QyUyMC0lMjAlRTQlQkMlQTAlRTglQkUlOTMlRTUlQjElODIuaHRtbCNfMi0lRTUlQkYlQUIlRTklODclOEQlRTQlQkMlQTAlRTQlQjglOEUlRTUlQkYlQUIlRTYlODElQTIlRTUlQTQlOEQ=">计算机网络 - 传输层<i class="fa fa-external-link-alt"></i></span></p>
+<p>可靠性：TCP超时重传，超过时限没收到确认，那么重传该数据包。</p>
+<p>滑动窗口：发送方和接受方各有一个相同大小的窗口，接收方不需要对窗口中每一个数据包确认，只需要确认窗口中最后一个按需到达的数据包。发送方收到接收方确认后就可以将窗口向右滑动，继续发送窗口内未发送的数据，根据接收方的确认选择是否重发窗口中数据包，窗口大小可以动态调整。</p>
+<p>流量控制：</p>
+<p>拥塞控制：</p>
+
     </div>
 
     

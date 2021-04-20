@@ -24,15 +24,15 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="一级索引二级索引稀疏索引稠密索引为什么用B+树">
+<meta name="description" content="索引类型 Ordered Index Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index ) 聚集索引：物理存储顺序和索引顺序相同，或者称主索引。降低插入删除性能，因为涉及到数据移动。 非聚集索引：物理存储顺序和索引顺序不一定相同。必须是稠密索引。 #### 稠密索引 (Dense Index">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Interview-DB">
 <meta property="og:url" content="https://andersonzhangyq.github.io/2021/03/30/Interview-DB/index.html">
 <meta property="og:site_name" content="Anderson&#39;s Blog">
-<meta property="og:description" content="一级索引二级索引稀疏索引稠密索引为什么用B+树">
+<meta property="og:description" content="索引类型 Ordered Index Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index ) 聚集索引：物理存储顺序和索引顺序相同，或者称主索引。降低插入删除性能，因为涉及到数据移动。 非聚集索引：物理存储顺序和索引顺序不一定相同。必须是稠密索引。 #### 稠密索引 (Dense Index">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-03-29T23:48:05.000Z">
-<meta property="article:modified_time" content="2021-03-30T10:10:39.009Z">
+<meta property="article:modified_time" content="2021-04-05T04:43:10.069Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
@@ -195,7 +195,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BA%A7%E7%B4%A2%E5%BC%95%E4%BA%8C%E7%BA%A7%E7%B4%A2%E5%BC%95"><span class="nav-number">1.</span> <span class="nav-text">一级索引二级索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E7%B4%A2%E5%BC%95%E7%A8%A0%E5%AF%86%E7%B4%A2%E5%BC%95"><span class="nav-number">2.</span> <span class="nav-text">稀疏索引稠密索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8B-%E6%A0%91"><span class="nav-number">3.</span> <span class="nav-text">为什么用B+树</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">索引类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ordered-index"><span class="nav-number">1.1.</span> <span class="nav-text">Ordered Index</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#primary-index-clustering-index-%E5%92%8C-secondary-index-non-clustering-index"><span class="nav-number">1.1.1.</span> <span class="nav-text">Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index )</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8bb%E6%A0%91%E5%81%9A%E7%B4%A2%E5%BC%95"><span class="nav-number">2.</span> <span class="nav-text">为什么用B+&#x2F;B树做索引</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -309,7 +309,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="一级索引二级索引"><a href="#一级索引二级索引" class="headerlink" title="一级索引二级索引"></a>一级索引二级索引</h2><h2 id="稀疏索引稠密索引"><a href="#稀疏索引稠密索引" class="headerlink" title="稀疏索引稠密索引"></a>稀疏索引稠密索引</h2><h2 id="为什么用B-树"><a href="#为什么用B-树" class="headerlink" title="为什么用B+树"></a>为什么用B+树</h2>
+        <h2 id="索引类型">索引类型</h2>
+<h3 id="ordered-index">Ordered Index</h3>
+<h4 id="primary-index-clustering-index-和-secondary-index-non-clustering-index">Primary index ( Clustering index ) 和 Secondary index ( Non-clustering index )</h4>
+<p>聚集索引：物理存储顺序和索引顺序相同，或者称主索引。降低插入删除性能，因为涉及到数据移动。 非聚集索引：物理存储顺序和索引顺序不一定相同。必须是稠密索引。 #### 稠密索引 (Dense Index) 和 稀疏索引 (Sparse Index) 稠密索引：每个搜索码对应一个数据记录 稀疏索引：只有部分搜索码直接对应一个数据记录。比如将搜索码排序后分组，只记录每个组的最小搜索码，查找是找到比查询值小的最大搜索码，然后顺序查找找到对应数据记录。</p>
+<h2 id="为什么用bb树做索引">为什么用B+/B树做索引</h2>
+<ol type="1">
+<li>多叉vs二叉：首先普通的搜索树肯定不行，会退化为链表，所以要用平衡的搜索树。那么常用的红黑树是二叉树，对于给定n个值，树的高度由<code>order</code>（叉数）决定，记<span class="math inline">\(k=order\)</span>，那么树的高度<span class="math inline">\(h=\log_{k}n\)</span>。显然，多叉树的高度远小于二叉树。</li>
+<li>B+树 vs B树：B树的数据可以存储在叶子节点和非叶子节点，而B+树的数据一定存在叶子节点，这种设计使得B+树可以很方便地将数据顺序连接起来。B树确实提高了IO性能（把树节点载入到内存中，这些树节点按顺序放在磁盘中，每次顺序读取，减少寻道次数和读取次数），到那时不能顺序访问，所以提出了B+树来解决这个问题。</li>
+</ol>
+
     </div>
 
     
