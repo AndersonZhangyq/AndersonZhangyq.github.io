@@ -128,14 +128,16 @@ $$
 R=\frac{TP}{TP+FN}
 $$
 
-对于多人关键点检测的任务，首先要做的是将检测到的结果`dt`和`gt`做匹配（$OKS \gt k$则为一对匹配，每个`dt`会和`OKS`最大的相匹配），那么就可能会出现有的`dt`没有与之相匹配的`gt`。从代码中可知，COCO中将TP定义为有匹配并且匹配到的不是`ignore`的`gt`，FP的定义为没有匹配的`gt`，$TP+FN$其实就是所有的`gt`个数。
+对于多人关键点检测的任务，首先要做的是将检测到的结果`dt`和`gt`做匹配（$OKS \gt k$则为一对匹配，每个`dt`会和`OKS`最大的相匹配），那么就可能会出现有的`dt`没有与之相匹配的`gt`。从代码中可知，COCO中将TP定义为有匹配并且匹配到的不是`ignore`的`gt`，FP的定义为没有匹配的`gt`，$TP+FN$其实就是所有的`gt`个数（比如标注了100个instance，那么$TP+FN=100$）。
 
-$OKS=k$下，$AP^{OKS=k}$就是此时所有的Precision的均值，$AP=\sum_{k\in0.5:0.05:0.95}{AP^{OKS=k}}$，$AR$同理。
+$OKS=k$下，$AP^{OKS=k}$就是此时采样后的Precision均值。$AP=\frac{1}{10}\sum_{k\in0.5:0.05:0.95}{AP^{OKS=k}}$，$AR$同理。
 
-关于COCO上各个[指标](https://cocodataset.org/#keypoints-eval)的具体定义可以参考下图
+关于COCO上各个[指标](https://cocodataset.org/#keypoints-eval)的具体定义可以参考下图：
 
 ![](Pose-Estimation-Metrics/image-20210325204226067.png)
 
 [人体姿态估计－评价指标（一）_ZXF_1991的博客-CSDN博客](https://blog.csdn.net/ZXF_1991/article/details/104279387)
 
 [目标检测中的mAP是什么含义？ - 知乎](https://zhuanlan.zhihu.com/p/107989173)
+
+[mAP for Object Detection](https://jonathan-hui.medium.com/map-mean-average-precision-for-object-detection-45c121a31173)
