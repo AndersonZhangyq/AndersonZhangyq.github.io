@@ -24,15 +24,15 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"andersonzhangyq.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-<meta name="description" content="理论背景 如果有一组不可靠的观测\(x&#x3D;\{x_1,x_2,x_3, \cdots, x_n\}\)，如何去预测真实值\(z\)呢？上述预测问题可以转化为一个优化问题，定义一个合适的指标\(M\)，那么 \[ z &#x3D; \arg\min_z E_y\{M(z,x_i)\} \] 比如线性回归的话，\(M\)就是平方差函数。 推广一下，把深度学习模型表示为函数\(f_{\theta}\)，模型">
+<meta name="description" content="Noise2Noise">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Noise2Noise">
 <meta property="og:url" content="https://andersonzhangyq.github.io/2021/04/01/Noise2Noise/index.html">
 <meta property="og:site_name" content="Anderson&#39;s Blog">
-<meta property="og:description" content="理论背景 如果有一组不可靠的观测\(x&#x3D;\{x_1,x_2,x_3, \cdots, x_n\}\)，如何去预测真实值\(z\)呢？上述预测问题可以转化为一个优化问题，定义一个合适的指标\(M\)，那么 \[ z &#x3D; \arg\min_z E_y\{M(z,x_i)\} \] 比如线性回归的话，\(M\)就是平方差函数。 推广一下，把深度学习模型表示为函数\(f_{\theta}\)，模型">
+<meta property="og:description" content="Noise2Noise">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-01T06:56:14.000Z">
-<meta property="article:modified_time" content="2021-05-10T03:51:30.438Z">
+<meta property="article:modified_time" content="2021-05-10T07:49:56.021Z">
 <meta property="article:author" content="Anderson Zhang">
 <meta name="twitter:card" content="summary">
 
@@ -299,8 +299,16 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
 </div>
 
+            <div class="post-description">Noise2Noise</div>
         </div>
       </header>
 
@@ -386,6 +394,24 @@ z = \arg\min_z E_y\{M(z,x_i)\}
   </span>
   <span class="author" itemprop="copyrightHolder">Anderson</span>
 </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
   <div class="powered-by">由 <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9taXN0Lw==">NexT.Mist</span> 强力驱动
   </div>
 
@@ -455,6 +481,7 @@ if (document.querySelectorAll('.mermaid').length) {
 
 
   
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
