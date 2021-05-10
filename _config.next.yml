@@ -119,7 +119,7 @@ avatar:
 
 social:
   GitHub: https://github.com/AndersonZhangyq || fab fa-github
-  E-Mail: mailto:andersonzhangyq@gmail.com || envelope
+  E-Mail: mailto:andersonzhangyq@gmail.com || fab fa-envelope
   # RSS: /atom.xml || fa fa-rss
   # Gitter: https://gitter.im/hexo-next || fab fa-gitter
 
@@ -281,3 +281,12 @@ pangu: true
 lazyload: true
 
 excerpt_description: true
+
+busuanzi_count:
+  enable: true
+  total_visitors: true
+  total_visitors_icon: fa fa-user
+  total_views: true
+  total_views_icon: fa fa-eye
+  post_views: true
+  post_views_icon: fa fa-eye
