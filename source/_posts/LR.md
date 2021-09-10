@@ -4,6 +4,7 @@ typora-copy-images-to: LR
 date: 2021-09-07 14:12:55
 tags:
 categories:
+    - ["Machine Learning"]
 ---
 # 引入
 逻辑斯特回归的输入是样本的特征，输出是样本属于正例的概率，可见他的输出是连续值。设定一个阈值之后，逻辑斯特回归就可以作为一个分类模型来使用。
